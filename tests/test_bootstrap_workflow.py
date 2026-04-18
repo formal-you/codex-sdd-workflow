@@ -527,7 +527,9 @@ class BootstrapWorkflowTests(unittest.TestCase):
         self.assertIn("Codex SDD Workflow", readme)
         self.assertIn("Git completion handoff discipline", readme)
         self.assertIn("${CODEX_HOME:-$HOME/.codex}/skills", readme)
-        self.assertIn("--workflow-profile lite", readme)
+        self.assertIn("在 Codex 中使用", readme)
+        self.assertIn("先预览将要写入的内容", readme)
+        self.assertIn("默认使用 `lite`", readme)
         self.assertIn("full` is beta scaffolding", readme)
         self.assertNotIn("references/README.md", readme)
 

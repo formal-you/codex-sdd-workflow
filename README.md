@@ -33,36 +33,20 @@ $env:CODEX_HOME = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { "$HOME\.codex"
 git clone <repo-url> "$env:CODEX_HOME\skills\codex-sdd-workflow"
 ```
 
-## 快速开始
+## 在 Codex 中使用
 
-进入本 skill 目录后，先对目标 repo 执行 dry run：
+安装并重启 Codex 后，直接用自然语言说明你要给哪个仓库接入 SDD workflow。Codex 会根据 `SKILL.md` 的规则选择 `lite/full` profile、执行安全预览，并在 bootstrap 后引导你进入生成的 repo-local workflow。
 
-```sh
-python scripts/bootstrap_sdd_pack.py --target /path/to/repo --dry-run
-```
+如果你没有明确要求 backlog、sprint、release 或 CI/CD scaffolding，Codex 默认使用 `lite` profile。
 
-确认输出后，使用默认推荐的 lightweight profile：
+常见请求示例：
 
-```sh
-python scripts/bootstrap_sdd_pack.py --target /path/to/repo --workflow-profile lite
-```
+- “请使用 `codex-sdd-workflow` 给当前仓库初始化一套 SDD workflow，先预览将要写入的内容。”
+- “这个仓库已经有旧版 SDD workflow，请帮我安全升级，不要覆盖根目录已有的 README 和 AGENTS。”
+- “我不确定该用 `lite` 还是 `full`，请先帮我判断，再接入 workflow。”
+- “请为这个多人协作项目接入完整 agile delivery scaffolding，但不要把它当成完整 CI/CD 平台。”
 
-bootstrap 完成后，进入目标 repo，并从生成的 workflow 入口开始：
-
-```sh
-cd /path/to/repo
-./SDD/scripts/session-brief.sh
-./SDD/scripts/validate-sdd.sh --strict
-./SDD/scripts/new-task.sh "Describe the next change"
-```
-
-PowerShell 用户使用 `SDD/scripts/` 下对应的 `.ps1` 脚本：
-
-```powershell
-./SDD/scripts/session-brief.ps1
-./SDD/scripts/validate-sdd.ps1 -Strict
-./SDD/scripts/new-task.ps1 "Describe the next change"
-```
+接入完成后，Codex 应继续读取目标仓库中的 `AGENTS.md`、`SDD/docs/process.md` 和 `SDD/workflow.md`，再创建第一个 parent task，而不是停在安装步骤。
 
 ## Profile 选择
 
@@ -70,27 +54,6 @@ PowerShell 用户使用 `SDD/scripts/` 下对应的 `.ps1` 脚本：
 - `full` is beta scaffolding：在 `lite` 基础上增加 backlog、sprint、release 和 CI/CD-oriented 目录与模板。
 
 `full` 不是完整的 agile management 平台，也不是 CI/CD orchestration 平台。它提供 repo-local scaffolding，真正的 issue tracker、PR 审批、release 环境和流水线仍需要接入你自己的团队系统。
-
-## 常用命令
-
-```sh
-# 预览写入内容
-python scripts/bootstrap_sdd_pack.py --target /path/to/repo --dry-run
-
-# 生成 lite profile
-python scripts/bootstrap_sdd_pack.py --target /path/to/repo --workflow-profile lite
-
-# 生成 full profile
-python scripts/bootstrap_sdd_pack.py --target /path/to/repo --workflow-profile full
-
-# 只刷新生成的 workflow 目录
-python scripts/bootstrap_sdd_pack.py --target /path/to/repo --force
-
-# 保留目标 repo 原有根 README.md / AGENTS.md
-python scripts/bootstrap_sdd_pack.py --target /path/to/repo --no-root-shims
-```
-
-只有在你明确希望重建目标 repo 根目录 `README.md` 和 `AGENTS.md` 时，才使用 `--force-root-shims`。
 
 ## 验证
 
