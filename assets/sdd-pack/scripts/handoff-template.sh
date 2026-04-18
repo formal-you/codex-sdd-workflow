@@ -151,6 +151,15 @@ printf -- '- [ ] recommended commit message: %s\n' "$commit_message"
 printf -- '- [ ] recommended next step: %s\n' "$next_action"
 printf -- '- [ ] waiting on user decision: \n'
 printf -- '- [ ] no next step because: \n'
+printf '\n## Context Checkpoint\n\n'
+printf -- '- [ ] true goal: \n'
+printf -- '- [ ] completed work: \n'
+printf -- '- [ ] remaining work: \n'
+printf -- '- [ ] next concrete action: %s\n' "$next_action"
+printf -- '- [ ] risk / blocker: %s\n' "$risk"
+printf -- '- [ ] latest validation status: \n'
+printf -- '- [ ] context action: continue / compact / new session\n'
+printf '\n'
 printf -- '- [x] git status snapshot:\n'
 if [[ -n "$git_status" ]]; then
   while IFS= read -r line; do

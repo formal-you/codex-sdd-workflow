@@ -23,7 +23,7 @@ Use this folder as the durable memory layer for the repository.
 - `architecture.md`: module map, ownership, risky areas
 - `testing.md`: commands and quality gates
 - `git-workflow.md`: branch naming, commit conventions, PR readiness
-- `progress.md`: aggregate hot-state summary and session handoff
+- `progress.md`: aggregate hot-state summary, session handoff, and context checkpoint
 - `workflow-audit.md`: scorecard and findings from validating the workflow itself
 - `../state/`: branch-aware and task-aware hot-state notes that should not bloat `progress.md`
 

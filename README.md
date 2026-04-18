@@ -145,17 +145,23 @@ git clone <repo-url> "$env:CODEX_HOME\skills\codex-sdd-workflow"
    - `tasks/active/TASK-*.md` 是正式 task card，必须包含目标、scope、验收标准、验证与 Completion Handoff。
    - `state/hot/tasks/*.md` 只是 task-local scratch note，用来降低共享文件冲突，不能替代 task card。
 
-6. **完成前必须闭环**
+6. **长会话必须先 checkpoint**
+   - 不要把当前目标、已完成内容、未完成内容、下一步、风险、改动文件或验证状态只放在聊天记忆里。
+   - 当任务 scope 变大、会话变长、记忆开始模糊、即将关键实现/提交、即将委派 subtasks，或发生过 context 压缩/恢复时，先把 checkpoint 写进 active task、`docs/progress.md` 或 `state/hot/`。
+   - checkpoint 至少写清：真实目标、已完成内容、剩余工作、下一步明确动作、风险或 blocker、最近验证状态。
+   - 如果 UI 显示 context 使用比例达到或超过 29%，先写 checkpoint，再询问用户：开启压缩，还是切换到新的 session。
+
+7. **完成前必须闭环**
    - 任务完成前，必须留下验证 evidence 或说明为什么无法验证。
    - 必须留下 next step，或说明项目已经到达终态。
    - 必须遵守 `TASK_COMPLETION_GIT_MODE`：默认 `manual` 模式下不自动 commit，而是记录未提交原因和推荐 commit message。
 
-7. **使用 full profile 时保持边界**
+8. **使用 full profile 时保持边界**
    - `full` 是 repo-local agile delivery scaffolding。
    - 若团队已有 Jira / GitHub Issues / Linear，把本地 backlog 当执行镜像和 handoff 载体，不要宣称它是唯一真源。
    - connector hook 当前按 pull-first 使用，不要承诺双向同步。
 
-8. **使用 overlay 时保护 parser contract**
+9. **使用 overlay 时保护 parser contract**
    - 只有用户明确要求组织级模板定制时才使用 `--template-overlay`。
    - overlay 可以增加字段，但不能删除必需标题、checkbox 状态、Acceptance Criteria、Evidence、Completion Handoff 或 Git handoff 字段。
 

@@ -14,3 +14,4 @@ Use this folder for high-frequency notes that should not become merge hotspots i
 - prefer small markdown notes over long running diaries
 - summarize the shared result back into `../docs/progress.md`
 - move retired task-local notes into `../history/`
+- when a session is long or context has been compressed, write a checkpoint with the true goal, completed work, remaining work, next action, risks, and latest validation status

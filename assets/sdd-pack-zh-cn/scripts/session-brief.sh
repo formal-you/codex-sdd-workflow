@@ -136,7 +136,7 @@ for heading in "Macro Focus" "Rules of Archiving" "Recent History" "Pointers" "C
   fi
 done
 
-for heading in "Current" "Recent Findings" "Session Handoff" "Concurrency" "当前上下文" "协作区" "当前摘要" "当前" "Git handoff" "$legacy_git_handoff_heading" "下一步选项" "下一步" "并行工作摘要" "Blockers" "$legacy_blockers_heading"; do
+for heading in "Current" "Recent Findings" "Session Handoff" "Context Checkpoint" "Concurrency" "当前上下文" "协作区" "当前摘要" "当前" "Git handoff" "$legacy_git_handoff_heading" "下一步选项" "下一步" "并行工作摘要" "Blockers" "$legacy_blockers_heading"; do
   if [[ -f "$progress_path" ]]; then
     body="$(section "$heading" "$progress_path")"
     if [[ -n "$body" ]]; then

@@ -11,6 +11,7 @@ class SkillMetadataTests(BootstrapWorkflowTestCase):
         self.assertIn("durable docs", description)
         self.assertIn("task graphs", description)
         self.assertIn("branch/task hot-state notes", description)
+        self.assertIn("context checkpoints", description)
         self.assertIn("template overlays", description)
         self.assertIn("lite or full", description)
         self.assertIn("connector hooks", description)
@@ -26,6 +27,10 @@ class SkillMetadataTests(BootstrapWorkflowTestCase):
         self.assertIn("## Git Completion Closure", content)
         self.assertIn("TASK_COMPLETION_GIT_MODE", content)
         self.assertIn("Subagents never own the final commit", content)
+        self.assertIn("## Session Decay And Checkpoint Rules", content)
+        self.assertIn("context meter", content)
+        self.assertIn("29%", content)
+        self.assertIn("compact the context or switch to a new session", content)
 
     def test_skill_references_route_to_expected_docs(self) -> None:
         content = SKILL_MD.read_text(encoding="utf-8")
@@ -88,7 +93,9 @@ class SkillMetadataTests(BootstrapWorkflowTestCase):
         self.assertIn("$codex-sdd-workflow", interface["default_prompt"])
         self.assertIn("lite or full", interface["default_prompt"])
         self.assertIn("existing repo", interface["default_prompt"])
+        self.assertIn("checkpoint", interface["default_prompt"])
         self.assertIn("workflow", interface["short_description"].lower())
+        self.assertIn("checkpointed session recovery", interface["short_description"])
         self.assertIn("durable", frontmatter["description"])
 
     def test_quick_validate_passes_for_current_skill(self) -> None:

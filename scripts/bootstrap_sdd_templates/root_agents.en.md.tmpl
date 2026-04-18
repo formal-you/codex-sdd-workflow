@@ -22,6 +22,15 @@ When sources disagree, trust them in this order:
 7. Run `./{sdd_dir}/scripts/validate-sdd.ps1 -Strict` or `./{sdd_dir}/scripts/validate-sdd.sh --strict`
 8. Review [`{sdd_dir}/workflow.md`](./{sdd_dir}/workflow.md) and the relevant docs only for the area you are touching
 
+## Session Decay And Checkpoint Rules
+
+- Do not keep the current goal, completed work, remaining work, next action, risks, changed files, or validation status only in chat memory.
+- Record durable state in the active task, [`{sdd_dir}/docs/progress.md`](./{sdd_dir}/docs/progress.md), or [`{sdd_dir}/state/hot/`](./{sdd_dir}/state/hot/).
+- Before continuing, write a repo-local checkpoint when the task scope grows, the session is long, memory is becoming fuzzy, critical implementation or commit work is next, subtasks are about to be delegated, or context compression/recovery has happened.
+- A checkpoint must record: true goal, completed work, remaining work, next concrete action, risks or blockers, and latest validation status.
+- If the UI exposes a context meter and it reaches or exceeds 29%, first write the checkpoint, then ask the user whether to compact context or switch to a new session.
+- After compression or resume, treat the summary as navigation only. Re-read `AGENTS.md`, `docs/progress.md`, the active task, relevant hot-state notes, and `git status --short` before continuing.
+
 ## Task, Subtask, And Integration Rules
 
 - Start implementation from a task card, not from chat memory alone.

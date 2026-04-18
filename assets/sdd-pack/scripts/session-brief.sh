@@ -130,7 +130,7 @@ for heading in "Macro Focus" "Rules of Archiving" "Recent History" "Pointers" "C
   fi
 done
 
-for heading in "Current" "Recent Findings" "Session Handoff" "Concurrency" "Current Context" "Collaboration" "Current Summary" "Now" "Git Closure" "Next Options" "Next" "Parallel Work Summary" "Blockers"; do
+for heading in "Current" "Recent Findings" "Session Handoff" "Context Checkpoint" "Concurrency" "Current Context" "Collaboration" "Current Summary" "Now" "Git Closure" "Next Options" "Next" "Parallel Work Summary" "Blockers"; do
   if [[ -f "$progress_path" ]]; then
     body="$(section "$heading" "$progress_path")"
     if [[ -n "$body" ]]; then

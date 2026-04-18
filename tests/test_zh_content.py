@@ -21,6 +21,9 @@ class ZhContentTests(BootstrapWorkflowTestCase):
                 "## Session Handoff\n\n"
                 "- [ ] commit status：未提交\n"
                 "- [ ] 推荐的下一步明确动作：运行 targeted regression\n\n"
+                "## Context Checkpoint\n\n"
+                "- [ ] 真实目标：保持恢复链稳定\n"
+                "- [ ] 最近验证状态：等待 targeted regression\n\n"
                 "## Concurrency\n\n"
                 "- [ ] 集成状态：single_task\n\n"
                 "## Git handoff\n\n"
@@ -49,6 +52,8 @@ class ZhContentTests(BootstrapWorkflowTestCase):
             self.assertIn("## Current", result.stdout)
             self.assertIn("## Session Handoff", result.stdout)
             self.assertIn("推荐的下一步明确动作：运行 targeted regression", result.stdout)
+            self.assertIn("## Context Checkpoint", result.stdout)
+            self.assertIn("真实目标：保持恢复链稳定", result.stdout)
             self.assertIn("## Concurrency", result.stdout)
             self.assertIn("## Git handoff", result.stdout)
             self.assertIn("commit status：legacy 未提交", result.stdout)
@@ -127,6 +132,8 @@ class ZhContentTests(BootstrapWorkflowTestCase):
         self.assertIn("parent task", subtask_template)
         self.assertIn("subtask", subtask_template)
         self.assertIn("## Session Handoff", progress_doc)
+        self.assertIn("## Context Checkpoint", progress_doc)
+        self.assertIn("开启压缩 / 切换新 session", progress_doc)
         self.assertIn("## Current", progress_doc)
         self.assertNotIn("# Testing Guide", testing_doc)
         self.assertNotIn("Before claiming a task is done", testing_doc)

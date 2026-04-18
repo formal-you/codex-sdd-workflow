@@ -90,6 +90,8 @@ Always fill these first:
 
 Keep shared recovery state in `SDD/docs/progress.md`. Keep branch-local or task-local scratch notes under `SDD/state/hot/`.
 
+For long sessions, do not leave the current goal, completed work, remaining work, next action, risks, changed files, or validation status only in chat memory. Write a checkpoint in the active task, `SDD/docs/progress.md`, or `SDD/state/hot/`. If the UI exposes a context meter and it reaches or exceeds 29%, write that checkpoint first, then ask whether to compact context or switch to a new session.
+
 Before finishing or archiving a task, leave one next-step signal:
 
 - a `recommended next step` entry in `SDD/docs/progress.md`

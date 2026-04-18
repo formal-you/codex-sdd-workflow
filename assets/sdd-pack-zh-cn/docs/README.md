@@ -23,7 +23,7 @@
 - `architecture.md`：模块划分、ownership 与高风险区域
 - `testing.md`：测试命令与 Quality Gate
 - `git-workflow.md`：分支命名、提交规范与 PR 准备
-- `progress.md`：聚合热状态摘要与 Session Handoff
+- `progress.md`：聚合热状态摘要、Session Handoff 与 context checkpoint
 - `workflow-audit.md`：验证 workflow 本身时的评分和结论
 - `../state/`：branch-aware 与 task-aware 的热状态便签，避免把 `progress.md` 写成共享热点
 

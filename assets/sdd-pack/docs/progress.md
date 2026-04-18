@@ -35,6 +35,18 @@ Use `[ ]` for unfinished, pending, or unconfirmed items. Use `[x]` for completed
 - [ ] waiting on user decision:
 - [ ] no next step because:
 
+## Context Checkpoint
+
+> Fill this before long work continues, before critical implementation or commit steps, before delegating subtasks, after context compression/recovery, or when the UI context meter reaches 29%.
+
+- [ ] true goal:
+- [ ] completed work:
+- [ ] remaining work:
+- [ ] next concrete action:
+- [ ] risk / blocker:
+- [ ] latest validation status:
+- [ ] context action: continue / compact / new session
+
 ## Concurrency
 
 - [ ] integration status:

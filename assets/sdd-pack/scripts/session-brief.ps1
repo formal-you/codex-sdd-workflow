@@ -186,7 +186,7 @@ foreach ($heading in @("Macro Focus", "Rules of Archiving", "Recent History", "P
     }
 }
 
-foreach ($heading in @("Current", "Recent Findings", "Session Handoff", "Concurrency", "Current Context", "Collaboration", "Current Summary", "Now", "Git Closure", "Next Options", "Next", "Parallel Work Summary", "Blockers")) {
+foreach ($heading in @("Current", "Recent Findings", "Session Handoff", "Context Checkpoint", "Concurrency", "Current Context", "Collaboration", "Current Summary", "Now", "Git Closure", "Next Options", "Next", "Parallel Work Summary", "Blockers")) {
     $body = Get-MarkdownSection -Path $progressPath -Heading $heading
     if ($body) {
         Write-Output "## $heading"

@@ -189,7 +189,7 @@ foreach ($heading in @("Macro Focus", "Rules of Archiving", "Recent History", "P
     }
 }
 
-foreach ($heading in @("Current", "Recent Findings", "Session Handoff", "Concurrency", "当前上下文", "协作区", "当前摘要", "当前", "Git handoff", $legacyGitHandoffHeading, "下一步选项", "下一步", "并行工作摘要", "Blockers", $legacyBlockersHeading)) {
+foreach ($heading in @("Current", "Recent Findings", "Session Handoff", "Context Checkpoint", "Concurrency", "当前上下文", "协作区", "当前摘要", "当前", "Git handoff", $legacyGitHandoffHeading, "下一步选项", "下一步", "并行工作摘要", "Blockers", $legacyBlockersHeading)) {
     $body = Get-MarkdownSection -Path $progressPath -Heading $heading
     if ($body) {
         Write-Output "## $heading"

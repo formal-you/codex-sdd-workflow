@@ -71,6 +71,15 @@ The repository-level operating contract lives in the root [`AGENTS.md`](../AGENT
 - if no recommendation is possible, record the waiting user decision or terminal reason in `docs/progress.md`
 - after archiving, refresh the short archive notes in `docs/process.md` and retire any task-local hot-state note that is no longer needed
 
+## Session Decay And Checkpoints
+
+- Do not keep the current goal, completed work, remaining work, next action, risks, changed files, or validation status only in chat memory.
+- Before long or risky work continues, update the active task, `docs/progress.md`, or a relevant `state/hot/` note with a checkpoint.
+- Create a checkpoint when task scope grows, the session is long, memory is fuzzy, critical implementation or commit work is next, subtasks are about to be delegated, or context compression/recovery has happened.
+- A checkpoint must record: true goal, completed work, remaining work, next concrete action, risks or blockers, and latest validation status.
+- If the UI exposes a context meter and it reaches or exceeds 29%, write the checkpoint first, then ask the user whether to compact context or switch to a new session.
+- After compression or resume, use the summary only as navigation. Re-read `AGENTS.md`, `docs/progress.md`, the active task, relevant hot-state notes, and `git status --short` before continuing.
+
 ## Git Workflow
 
 Follow [`docs/git-workflow.md`](./docs/git-workflow.md) for branch naming, Conventional Commits, and PR readiness. During bootstrap, the pack also fills in `.gitignore` and initializes a local repo when the target is clearly a standalone project.

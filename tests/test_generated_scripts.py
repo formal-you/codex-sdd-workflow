@@ -97,6 +97,8 @@ class GeneratedScriptsTests(BootstrapWorkflowTestCase):
             self.assertIn("- [ ] commit status: not committed", result.stdout)
             self.assertIn("- [ ] uncommitted reason: manual mode", result.stdout)
             self.assertIn("- [ ] recommended commit message: chore: test handoff", result.stdout)
+            self.assertIn("## Context Checkpoint", result.stdout)
+            self.assertIn("- [ ] context action: continue / compact / new session", result.stdout)
             self.assertNotIn("backlog item:", result.stdout)
 
     def test_shell_handoff_reports_repo_scope_changes(self) -> None:
@@ -130,6 +132,8 @@ class GeneratedScriptsTests(BootstrapWorkflowTestCase):
             self.assertIn("- [ ] commit status: not committed", result.stdout)
             self.assertIn("- [ ] uncommitted reason: manual mode", result.stdout)
             self.assertIn("- [ ] recommended commit message: chore: test handoff", result.stdout)
+            self.assertIn("## Context Checkpoint", result.stdout)
+            self.assertIn("- [ ] context action: continue / compact / new session", result.stdout)
             self.assertNotIn("backlog item:", result.stdout)
 
     def test_session_brief_prefers_current_handoff_and_keeps_legacy_fallback(self) -> None:
@@ -151,6 +155,9 @@ class GeneratedScriptsTests(BootstrapWorkflowTestCase):
                 "## Session Handoff\n\n"
                 "- [ ] commit status: not committed\n"
                 "- [ ] recommended next step: run the focused regression\n\n"
+                "## Context Checkpoint\n\n"
+                "- [ ] true goal: keep session recovery reliable\n"
+                "- [ ] latest validation status: focused regression pending\n\n"
                 "## Concurrency\n\n"
                 "- [ ] integration status: single_task\n\n"
                 "## Git Closure\n\n"
@@ -184,6 +191,8 @@ class GeneratedScriptsTests(BootstrapWorkflowTestCase):
             self.assertIn("current phase: focused validation", result.stdout)
             self.assertIn("## Session Handoff", result.stdout)
             self.assertIn("recommended next step: run the focused regression", result.stdout)
+            self.assertIn("## Context Checkpoint", result.stdout)
+            self.assertIn("true goal: keep session recovery reliable", result.stdout)
             self.assertIn("## Concurrency", result.stdout)
             self.assertIn("## Git Closure", result.stdout)
             self.assertIn("commit status: legacy not committed", result.stdout)

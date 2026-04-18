@@ -1,6 +1,6 @@
 ---
 name: codex-sdd-workflow
-description: Bootstrap or upgrade a durable Codex workflow inside an existing repository, with task graphs, handoff docs, branch/task hot-state notes, local repo scripts, optional template overlays, and lite or full operating models. Use when Codex needs to initialize or refresh repo-local workflow scaffolding for session recovery, durable docs, parent tasks, subtasks, git collaboration rules, agile delivery scaffolding, connector hooks, or CI/CD-oriented workflow structure.
+description: Bootstrap or upgrade a durable Codex workflow inside an existing repository, with task graphs, handoff docs, branch/task hot-state notes, context checkpoints, local repo scripts, optional template overlays, and lite or full operating models. Use when Codex needs to initialize or refresh repo-local workflow scaffolding for session recovery, durable docs, parent tasks, subtasks, git collaboration rules, agile delivery scaffolding, connector hooks, or CI/CD-oriented workflow structure.
 ---
 
 # Codex SDD Workflow
@@ -18,6 +18,7 @@ Core working rules:
 - keep templates separate from generated artifacts
 - keep live work in `tasks/active/`, archive finished work in `tasks/history/`, and update `docs/process.md`
 - keep shared recovery state in `docs/progress.md`, and keep branch-local or task-local scratch notes in `state/hot/`
+- before long or risky work continues, write a repo-local checkpoint instead of relying on chat memory
 - before finishing or archiving work, leave a next-step entry so the next session can continue with direction, not just state
 - before closing completed work, follow the generated repo's Git completion mode and either commit or record why it is not committed
 
@@ -71,6 +72,18 @@ Use Markdown checkbox semantics in generated workflow docs: `[ ]` means unfinish
 Keep `docs/progress.md` as the shared aggregate recovery note. Put high-frequency branch or task scratch notes under `state/hot/` so multi-branch work does not turn `progress.md` into a merge hotspot.
 
 When archiving a task, retire or summarize any matching task-local hot-state note.
+
+## Session Decay And Checkpoint Rules
+
+Do not keep the current goal, completed work, remaining work, next action, risks, changed files, or validation status only in chat memory. Record them in an active task, `docs/progress.md`, or `state/hot/`.
+
+Before continuing, write a repo-local checkpoint when work grows in scope, the session is long, memory is becoming fuzzy, a critical implementation or commit is next, subtasks are about to be delegated, or context compression/recovery has happened.
+
+Each checkpoint must capture: true goal, completed work, remaining work, next concrete action, risks or blockers, and latest validation status.
+
+If the UI exposes a context meter and it reaches or exceeds 29%, first write the checkpoint, then ask the user whether to compact the context or switch to a new session. If no meter is visible, use the qualitative triggers above.
+
+After a compression or resume, treat the summary as navigation only. Re-read repo-local ground truth before continuing: root `AGENTS.md`, `docs/progress.md`, active task, relevant `state/hot/` notes, and `git status --short`.
 
 ## Git Completion Closure
 

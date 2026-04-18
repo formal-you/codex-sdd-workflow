@@ -22,6 +22,15 @@
 7. 执行 `./{sdd_dir}/scripts/validate-sdd.ps1 -Strict` 或 `./{sdd_dir}/scripts/validate-sdd.sh --strict`
 8. 阅读 [`{sdd_dir}/workflow.md`](./{sdd_dir}/workflow.md) 以及与你当前改动相关的文档
 
+## Session 衰减与 Checkpoint 规则
+
+- 不要把当前目标、已完成内容、未完成内容、下一步、风险、改动文件或验证状态只留在聊天记忆里。
+- 持久状态必须写入当前 task、[`{sdd_dir}/docs/progress.md`](./{sdd_dir}/docs/progress.md)，或 [`{sdd_dir}/state/hot/`](./{sdd_dir}/state/hot/)。
+- 当任务 scope 明显变大、会话持续较久、开始依赖模糊记忆、即将进入关键实现或提交、即将委派 subtasks，或已经发生 context 压缩/恢复时，主 agent 必须先写 repo-local checkpoint，再继续。
+- checkpoint 至少记录：真实目标、已完成内容、剩余工作、下一步明确动作、风险或 blocker、最近验证状态。
+- 如果 UI 暴露 context 使用比例，并且达到或超过 29%，主 agent 必须先写 checkpoint，再询问用户：是开启压缩，还是切换到新的 session。
+- context 压缩或恢复后，摘要只能作为导航；继续前必须回读 `AGENTS.md`、`docs/progress.md`、active task、相关 hot-state notes 和 `git status --short`。
+
 ## Task、Subtask 与集成规则
 
 - 从 task card 开始实现，不要只依赖聊天记忆。

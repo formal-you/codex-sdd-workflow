@@ -10,6 +10,7 @@ All notable changes to this project will be documented here.
 - Added branch-aware hot-state scaffolding under `SDD/state/`, keeping `progress.md` as the shared aggregate recovery surface.
 - Added connector-first configuration and stub entrypoints for `full`, with `EXTERNAL_ISSUE_SOURCE=none` and `CONNECTOR_MODE=pull-only` as the safe default.
 - Added supported template overlay loading plus overlay manifest recording for controlled task, subtask, evidence, and release template customization.
+- Added session-decay checkpoint discipline so long sessions, context compression, and high context usage are recorded in repo-local workflow state before work continues.
 
 ## Current Baseline
 

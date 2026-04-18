@@ -71,6 +71,15 @@
 - 如果暂时无法推荐下一步，在 `docs/progress.md` 写清楚等待用户决策或终态原因
 - 归档后，在 `docs/process.md` 中更新近期归档摘要，并退役不再需要的 task 级热状态记录
 
+## Session 衰减与 Checkpoint
+
+- 不要把当前目标、已完成内容、未完成内容、下一步、风险、改动文件或验证状态只留在聊天记忆里。
+- 长链路或高风险工作继续推进前，先把 checkpoint 写入 active task、`docs/progress.md`，或相关 `state/hot/` note。
+- 当任务 scope 明显变大、会话持续较久、开始依赖模糊记忆、即将进入关键实现或提交、即将委派 subtasks，或已经发生 context 压缩/恢复时，主 agent 必须先写 checkpoint，再继续。
+- checkpoint 至少记录：真实目标、已完成内容、剩余工作、下一步明确动作、风险或 blocker、最近验证状态。
+- 如果 UI 暴露 context 使用比例，并且达到或超过 29%，先写 checkpoint，再询问用户：是开启压缩，还是切换到新的 session。
+- context 压缩或恢复后，摘要只能作为导航；继续前必须回读 `AGENTS.md`、`docs/progress.md`、active task、相关 hot-state notes 和 `git status --short`。
+
 ## Git Workflow
 
 请遵循 [`docs/git-workflow.md`](./docs/git-workflow.md) 中的分支命名、Conventional Commits 与 PR 准备规则。初始化 workflow 时，pack 会在安全场景下自动补齐 `.gitignore`，并在目标目录本身尚未处于 Git 仓库中时初始化本地仓库。

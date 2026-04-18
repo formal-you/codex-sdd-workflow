@@ -152,6 +152,15 @@ printf -- '- [ ] recommended next step: %s\n' "$next_action"
 printf -- '- [ ] backlog 条目：\n'
 printf -- '- [ ] waiting on user decision: \n'
 printf -- '- [ ] no next step because: \n'
+printf '\n## Context Checkpoint\n\n'
+printf -- '- [ ] 真实目标：\n'
+printf -- '- [ ] 已完成内容：\n'
+printf -- '- [ ] 剩余工作：\n'
+printf -- '- [ ] 下一步明确动作：%s\n' "$next_action"
+printf -- '- [ ] 风险 / Blocker：%s\n' "$risk"
+printf -- '- [ ] 最近验证状态：\n'
+printf -- '- [ ] context 处理动作：继续 / 开启压缩 / 切换新 session\n'
+printf '\n'
 printf -- '- [x] git status snapshot:\n'
 if [[ -n "$git_status" ]]; then
   while IFS= read -r line; do
