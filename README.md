@@ -1,8 +1,8 @@
 # Codex SDD Workflow
 
-`codex-sdd-workflow` 是一个面向 Codex 的 workflow skill，用于在 existing repo 中 bootstrap 或升级一套 repo-local、可恢复、可审计的工程执行工作区。
+`codex-sdd-workflow` 是一个 Codex workflow skill，帮助你为已有代码仓库初始化或升级一套 repo-local 的工程执行工作区。
 
-它会把 task graph、handoff 文档、验证脚本、next-step discipline、Git completion handoff discipline，以及可选的 agile delivery scaffolding 写入目标 repo，让日常状态留在 repo 内，而不是散落在聊天上下文里。
+它把跨 session 恢复、task/subtask 管理、handoff、验证、next-step discipline、Git completion handoff discipline，以及可选的 agile delivery scaffolding 沉淀到目标 repo 中，让日常执行状态随代码保留，而不是依赖聊天上下文。
 
 ## 功能概览
 
@@ -15,7 +15,7 @@
 
 ## 安装
 
-把本 repo clone 到 Codex skills 目录：
+将本项目克隆到 Codex skills 目录：
 
 ```sh
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
@@ -33,7 +33,7 @@ git clone <repo-url> "$env:CODEX_HOME\skills\codex-sdd-workflow"
 
 ## 快速开始
 
-进入本 skill 目录后，先对目标 repo 做 dry run：
+进入本 skill 目录后，先对目标 repo 执行 dry run：
 
 ```sh
 python scripts/bootstrap_sdd_pack.py --target /path/to/repo --dry-run
@@ -45,7 +45,7 @@ python scripts/bootstrap_sdd_pack.py --target /path/to/repo --dry-run
 python scripts/bootstrap_sdd_pack.py --target /path/to/repo --workflow-profile lite
 ```
 
-bootstrap 完成后，在目标 repo 中从生成的 workflow 入口开始：
+bootstrap 完成后，进入目标 repo，并从生成的 workflow 入口开始：
 
 ```sh
 cd /path/to/repo
@@ -64,8 +64,8 @@ PowerShell 用户使用 `SDD/scripts/` 下对应的 `.ps1` 脚本：
 
 ## Profile 选择
 
-- `lite` 是公开推荐默认值，适合准确开发、session recovery、task card、handoff、验证和主 agent + subagent 执行纪律。
-- `full` 是 beta scaffolding，在 `lite` 基础上增加 backlog、sprint、release 和 CI/CD-oriented 目录与模板。
+- `lite` 是公开场景下的默认推荐，适合准确开发、session recovery、task card、handoff、验证和主 agent + subagent 执行纪律。
+- `full` is beta scaffolding：在 `lite` 基础上增加 backlog、sprint、release 和 CI/CD-oriented 目录与模板。
 
 `full` 不是完整的 agile management 平台，也不是 CI/CD orchestration 平台。它提供 repo-local scaffolding，真正的 issue tracker、PR 审批、release 环境和流水线仍需要接入你自己的团队系统。
 
@@ -106,7 +106,7 @@ python scripts/run_skill_validation.py --skip-tests
 python scripts/run_skill_validation.py --print-forward-prompts --report reports/skill-validation.md
 ```
 
-验证脚本会优先使用本机 `skill-creator` 的 `quick_validate.py`；在干净的开源 CI 环境中，如果没有 system skill，会自动使用本地 fallback validator。
+验证脚本会优先使用已安装的 `skill-creator` `quick_validate.py`；在干净的开源 CI 环境中，如果没有 system skill，会自动使用本地 fallback validator。
 
 ## Repo 结构
 
@@ -119,7 +119,7 @@ python scripts/run_skill_validation.py --print-forward-prompts --report reports/
 
 ## 设计边界
 
-这个 skill 会向 `--target` 指定的 repo 写入 workflow assets。建议先用 `--dry-run` 预览，再执行真实 bootstrap。
+这个 skill 会在 `--target` 指定的 repo 中生成 workflow assets。建议先用 `--dry-run` 预览，再执行真实 bootstrap。
 
 安全默认值：
 
