@@ -54,6 +54,27 @@
 
 ## 如何初始化
 
+对大多数使用者来说，**更推荐的入口不是手动敲命令，而是直接用自然语言让 Codex 执行这件事**。例如：
+
+```text
+请使用 codex-sdd-workflow 给当前仓库初始化一套 SDD workflow，先预览将要写入的内容。
+```
+
+```text
+这个仓库已经有旧版 SDD workflow，请帮我安全升级，不要覆盖根目录已有的 README 和 AGENTS。
+```
+
+```text
+我不确定该用 lite 还是 full，请先帮我判断，再接入 workflow。
+```
+
+下面这些命令主要给两类人使用：
+
+- 维护这个 skill 的维护者
+- 明确想自己在终端直接调用 bootstrap 脚本的高级使用者
+
+如果你是普通使用者，把这些命令理解为 **Codex 在后台会调用的底层入口** 就够了。
+
 最稳的命令：
 
 ```sh
@@ -91,7 +112,16 @@ python scripts/bootstrap_sdd_pack.py --target /path/to/repo --no-root-shims
 
 ## 初始化后怎么开始
 
-默认情况下：
+默认情况下，更自然的工作方式是直接对 Codex 说：
+
+- “给我一份当前项目状态与进度简报”
+- “先帮我建一个 parent task，再开始实现”
+- “帮我做验证留痕，然后归档这个任务”
+- “我要下线了，帮我生成 handoff”
+
+也就是说，**日常协作优先走自然语言入口，脚本是 Codex 在仓库内调用的确定性 API**。
+
+如果你需要手动检查或调试，默认情况下再按下面顺序进入：
 
 1. 阅读根 `AGENTS.md`
 2. 阅读 `SDD/docs/process.md`
@@ -130,7 +160,7 @@ python scripts/bootstrap_sdd_pack.py --target /path/to/repo --no-root-shims
 ./SDD/scripts/archive-task.sh "tasks/active/TASK-001-parent.md"
 ```
 
-PowerShell 对应命令分别是 `new-subtask.ps1` 与 `archive-task.ps1`。
+PowerShell 对应命令分别是 `new-subtask.ps1` 与 `archive-task.ps1`。但对普通使用者来说，仍然优先建议直接让 Codex 去调用这些脚本，而不是自己记忆命令。
 
 任务结束或归档前，必须留下一个下一步信号：
 

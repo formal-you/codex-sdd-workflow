@@ -14,6 +14,7 @@
 2. `SKILL.md` 正文已经收紧为触发与导航层
 3. `references/` 已经按职责拆分，不需要默认全部读取
 4. `scripts/README.md`、`reports/`、审计稿、forward-testing 用例集都属于维护者资产，不是普通使用者默认读取面
+5. 架构争议与缺陷讨论文档也属于维护者资产，不应进入普通 bootstrap 路径
 
 ## 当前最小加载面
 
@@ -32,6 +33,7 @@
 - `references/skill-audit-zh-cn.md`
 - `references/skill-audit.md`
 - `references/forward-testing.md`
+- `references/architectural-defects-zh-cn.md`
 - `scripts/README.md`
 - `reports/skill-validation.md`
 
@@ -69,7 +71,7 @@
 1. `SKILL.md` 只保留触发、主规则、reference 路由
 2. `quickstart.md` 保持英文短路径，不扩成完整手册
 3. `zh-cn-guide.md` 只承担中文完整使用指南，不吸收维护者材料
-4. 审计稿、forward-testing、validation report 只留在维护层
+4. 审计稿、架构批评回应、forward-testing、validation report 只留在维护层
 5. 新增 reference 时，先判断它是“用户执行面”还是“维护验证面”
 
 ## 审计结论等级

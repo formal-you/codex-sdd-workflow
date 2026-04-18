@@ -21,6 +21,9 @@
 - `forward-testing.md`
   - 固定 forward-testing 用例集
   - 用于验证 skill 触发、`lite/full` 选择、upgrade 安全性与 references 路由
+- `architectural-defects-zh-cn.md`
+  - 面向维护者的架构批评与 Codex 回应
+  - 用于讨论当前 skill 的结构性上限、边界问题与下一轮演进方向
 - `noise-audit-zh-cn.md`
   - 用户视角噪音审计
   - 用于评估这个 skill 在真实触发时是否会带来不必要的信息噪音
@@ -37,7 +40,8 @@
 
 1. 如果是在评估 skill 自身质量，读 `skill-audit-zh-cn.md` 或 `skill-audit.md`
 2. 如果是在做真实 skill 验证，读 `forward-testing.md`
-3. 如果是在评估普通使用者是否会被过多说明干扰，读 `noise-audit-zh-cn.md`
+3. 如果是在讨论结构性缺陷、适用边界或下一轮架构调整，读 `architectural-defects-zh-cn.md`
+4. 如果是在评估普通使用者是否会被过多说明干扰，读 `noise-audit-zh-cn.md`
 
 ## 和 assets 的边界
 

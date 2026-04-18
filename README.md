@@ -19,7 +19,8 @@
 | 能力 | 做了什么 | 为什么重要 |
 |:---|:---|:---|
 | **SDD 持久工作区** | 在仓库中生成 `SDD/` 目录，承载项目简介、架构记录、流程摘要、进度状态 | Codex 每次进入仓库都有稳定的起点，不会"从零开始" |
-| **Agent 工作契约** | 自动生成根目录 `AGENTS.md` 和 `README.md` shim | 明确 Codex 的启动顺序、执行边界和行为规范 |
+| **Agent 工作契约** | 自动生成根目录 `AGENTS.md` 和 `README.md` shim | 明确 Codex 的启动顺序和行为边界 |
+| **Agent 底层工具链**| 提供 `SDD/scripts/` 中稳定确定的操作脚本作为 API | 让 AI 代替人类执行管理动作，杜绝 AI 随意修改排版报错，建立强护栏 |
 | **结构化任务图** | Parent task → Subtask 的分层任务系统，含验收标准、验证命令、scope 界定 | 复杂工程不会变成"一锅粥"，每步可追踪、可验证 |
 | **Session 生存 & 交接** | `session-brief` 脚本 + `handoff` 模板 + `progress.md` 持久状态 | 断连不丢活，换人不丢线——跨 session 无缝恢复 |
 | **验证 & 审计链** | 内置 `validate-sdd`、evidence 模板、workflow audit 模板 | 确保流程"真的被执行了"，而非停留在纸面 |
@@ -174,63 +175,51 @@ SDD/
 
 ---
 
-## 🧭 日常使用完全指南
+## 🧭 日常使用完全指南（AI 原生交互）
+
+> ✨ **核心心智：动嘴不动手**
+> 你会在文档和目录中看到大量的环境脚本（如 `new-task.sh`、`archive-task.sh` 等）。
+> **请注意：设计这些并不是要求你手动去敲的！** 它们是暴露给 Codex 调用的**底层确定性 API**。
+> 本工作流提倡 **自然语言驱动**，你全程无需去记命令行，像跟同事说话一样驱使 Codex，它会在后台自动为你挂载、执行脚本并反馈结果。对于极客用户，你当然也可以随时在终端手动调用这些同名脚本。
 
 ### 1️⃣ 每次开始工作——恢复上下文
 
-```sh
-# 查看当前项目状态、活跃任务、上次进度
-./SDD/scripts/session-brief.sh          # Linux / macOS / WSL
-./SDD/scripts/session-brief.ps1         # Windows PowerShell
-```
+当你新开一个 Session 切入项目时：
+🗣️ **你只需要说**：*"给我一份当前的项目状态与进度简报"*
 
-Codex 也会自动阅读 `AGENTS.md` → `SDD/docs/process.md` → `SDD/workflow.md`，快速回到工作状态。
+> 🤖 **底层原理**：Codex 会自动为你阅读 `AGENTS.md` → `SDD/docs/process.md`，并在后台执行 `./SDD/scripts/session-brief.sh` 读取最新进度快照，瞬间从你上一次离开的地方接头。
 
 ### 2️⃣ 创建任务——动手之前先建卡
 
-```sh
-./SDD/scripts/new-task.sh "实现用户登录模块"
-./SDD/scripts/new-subtask.sh "TASK-001" "编写登录 API 端点"
-```
+不要让 Codex 漫无目的地直接改代码，先用一句话让它建立护栏：
+🗣️ **你只需要说**：*"我想开始做用户登录模块，先帮我建个主任务然后简要拆分一下"*
 
-> 💡 **为什么要先建卡？** 任务卡片记录了 scope、验收标准和验证命令，防止开发漂移。Codex 在执行前会先检查是否有活跃任务。
+> 🤖 **底层原理**：Codex 将调用内部工具链 `./SDD/scripts/new-task.sh` 安全生成一张带有验收标准和 Scope 界定的卡片。建卡是为了提供明确的终点和验证条件，遏制 AI 的代码漂移。
 
 ### 3️⃣ 开发中——按 scope 推进
 
-- Codex 会自动判断任务是独立完成还是拆分为 subtask 并行推进
-- 文件变更、测试记录、风险标注都会随任务卡更新
-- 如果一个任务自然拆成多个独立可验证的工作单元，Codex 会优先评估并行拆分
+一句话让它干活即可：
+🗣️ **你只需要说**：*"根据刚才的登录卡开始执行，需要建子任务就建"*
 
-### 4️⃣ 完成任务——验证、记录、闭环
+- Codex 会在开发过程中根据它的判断调用 `new-subtask.sh` 并行推进。
+- 如果一个任务自然拆成多个独立可验证的工作单元，Codex 会自主完成架构拆解与追踪。
 
-验证链路分三步：
+### 4️⃣ 完成任务——检查、验收与归档
 
-1. **参考 `docs/testing.md`** —— 查看该跑哪些命令、质量门禁有哪些要求
-2. **执行验证** —— Codex 按 testing 指南运行测试命令
-3. **填写验证记录** —— 基于 `templates/evidence/EVIDENCE-000-template.md` 创建一份验证留痕，保存到 `evidence/records/`
+功能写完后，无需手动清场：
+🗣️ **你只需要说**：*"登录逻辑开发完了，请进行合规检查，帮我做验证留痕并把它归档"*
 
-```sh
-# 运行 workflow 合规检查
-./SDD/scripts/validate-sdd.sh --strict
-
-# 归档已完成的任务
-./SDD/scripts/archive-task.sh "TASK-001"
-```
-
-> 💡 `validate-sdd --strict` 会检查 `evidence/records/` 下是否有实际的验证记录。如果没有，会给出 warning——所以验证完别忘了留痕。
-
-闭环三件事会自动确保：
-1. **验证留痕** —— 基于 evidence 模板记录"测了什么、结果如何、有什么缺口"
-2. **下一步指引** —— 指向后续任务或在 `progress.md` 留下推荐方向
-3. **Git 状态记录** —— 按 `workflow-config.env` 中的模式处理 commit
+> 🤖 **底层原理**：Codex 将为你流水线执行以下三步闭环：
+> 1. 参考 `docs/testing.md` 帮你跑测。
+> 2. 执行工具 `./SDD/scripts/validate-sdd.sh --strict` 并向 `evidence/records/` 中写入实测留痕日志。
+> 3. 最终通过 `./SDD/scripts/archive-task.sh` 安全清理工作区状态。
 
 ### 5️⃣ 交接 / 换人 / 下次继续
 
-```sh
-./SDD/scripts/handoff-template.sh
-```
+下班前或者需要把工作在明日留给同事：
+🗣️ **你只需要说**：*"我要下线了，帮我生成交接文档"*
 
-生成的交接文档包含：当前状态、未完成项、风险点、推荐 commit message 和下一步建议——无论是自己下次回来还是交给同事，都能无缝衔接。
+> 🤖 **底层原理**：Codex 获取交接 API `handoff-template.sh` 权限，生成交接文档并沉淀当前状态、未完成项、风险点以及下一步建议，并在内部按 `TASK_COMPLETION_GIT_MODE` 模式妥善处理你的 commit。没有任何历史包袱，明天谁接手都不抓瞎。
 
 ### 📌 关键文件速查
 
@@ -248,13 +237,13 @@ Codex 也会自动阅读 `AGENTS.md` → `SDD/docs/process.md` → `SDD/workflow
 
 ## ⚠️ 使用注意事项
 
-### 首次接入
+### Codex首次接入
 
 - 🔍 **先预览再执行**：首次推荐使用 `--dry-run` 预览生成内容，确认无误后再正式写入
 - 📝 **第一时间填写 `project-brief.md`**：这是 Codex 理解你项目的起点，越早填写越好
 - 🔀 **已有 README / AGENTS.md 不会被覆盖**：除非你明确使用 `--force-root-shims`
 
-### 日常使用
+### Codex日常使用
 
 - ✅ 用 `[ ]` 标记未完成项，`[x]` 标记已完成项——Codex 和脚本都依赖这个约定
 - 📂 活跃任务放 `tasks/active/`，完成后及时归档到 `tasks/history/`，保持工作区整洁

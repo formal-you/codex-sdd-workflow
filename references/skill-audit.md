@@ -6,7 +6,7 @@ This document audits the current `codex-sdd-workflow` skill implementation itsel
 
 - date: 2026-04-18
 - auditor: Codex
-- target version or branch: current workspace snapshot, with no Git branch metadata detected in this repo
+- target version or branch: current workspace snapshot on `main`
 - target under review: current `codex-sdd-workflow` implementation
 - latest validation result:
   - `reports/skill-validation.md`
@@ -124,7 +124,7 @@ During this audit, the skill's primary entrypoint (`README.md`) was completely r
 
 1. **Vastly Improved Readability & Engagement**: Transitioned from a dry, declarative format to a pain-point driven narrative, highlighting 9 core capabilities and specific user personas.
 2. **Materialized Workflow Artifacts**: Added a full visual directory tree of the generated `SDD/` workspace. The roles of markdown files, folders, and the intertwined lifecycles of tasks, evidence, and records are now explicitly modeled.
-3. **Comprehensive Daily Guide**: Filled the "what to do after installation" gap by providing a step-by-step daily lifecycle breakdown with concrete command cheat sheets. Re-clarified the difference between bootstrapping from scratch and upgrading an existing SDD repo safely.
-4. **Terminology Calibration**: Corrected stiff, machine-translated phrasing (e.g., "下一步纪律" became "下一步指引") into more natural engineering vernacular while keeping all 41 test assertions unbroken.
+3. **AI-Native Daily Guide**: Filled the "what to do after installation" gap with a natural-language-first workflow. The README now frames scripts as deterministic APIs for Codex rather than as the default surface ordinary users must type manually, while still clarifying first bootstrap versus safe upgrade behavior.
+4. **Terminology Calibration**: Corrected stiff, machine-translated phrasing (for example, replacing "下一步纪律" with "下一步指引") while keeping the current unittest suite aligned with the documentation language.
 
 **Audit Score Adjustment**: "Bootstrap clarity" and user on-boarding guidance are now fundamentally stronger. The next immediate step for documentation is to incorporate moving GIF demonstrations and fully filled-out example task templates to further lower the adoption barrier.
