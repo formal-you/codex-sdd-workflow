@@ -1,0 +1,56 @@
+# AGENTS.md
+
+This repository keeps durable workflow state under [`{sdd_dir}/`](./{sdd_dir}/). Treat this file as the single stable operating contract for agents.
+
+## Ground Truth Order
+
+When sources disagree, trust them in this order:
+
+1. Running code, compiler output, and test results
+2. The current git diff and active task or subtask files
+3. Project docs under [`{sdd_dir}/docs/`](./{sdd_dir}/docs/)
+4. Older notes, chat history, and assumptions
+
+## Session Start Checklist
+
+1. Read [`{sdd_dir}/docs/process.md`](./{sdd_dir}/docs/process.md)
+2. Read [`{sdd_dir}/docs/progress.md`](./{sdd_dir}/docs/progress.md)
+3. Read the active task and any linked subtasks
+4. Run `git rev-parse --show-toplevel`
+5. Run `git status --short`
+6. Run `./{sdd_dir}/scripts/session-brief.ps1` or `./{sdd_dir}/scripts/session-brief.sh`
+7. Run `./{sdd_dir}/scripts/validate-sdd.ps1 -Strict` or `./{sdd_dir}/scripts/validate-sdd.sh --strict`
+8. Review [`{sdd_dir}/workflow.md`](./{sdd_dir}/workflow.md) and the relevant docs only for the area you are touching
+
+## Task, Subtask, And Integration Rules
+
+- Start implementation from a task card, not from chat memory alone.
+- If the user gives multiple tasks, or one task can be split into multiple independently verifiable work units, the main agent must evaluate parallel decomposition first and record that decision in the parent task.
+- Default to creating subtasks first, and then using multiple subagents when owned scopes are disjoint, acceptance criteria can be verified independently, and final integration stays with the main agent.
+- Do not parallelize when write scopes overlap heavily, ordering is strict, or the next critical-path step is blocked on one subtask.
+- Link every delegated subtask from its parent task card.
+- If the workflow expects delegation but the current Codex session does not permit `spawn_agent`, explicitly record that delegation was evaluated but blocked by session policy.
+- The main agent owns integration, final verification, risk summary, and workflow updates.
+
+## Workflow Artifact Rules
+
+- When a local helper exists under [`{sdd_dir}/scripts/`](./{sdd_dir}/scripts/), use it instead of hand-writing the initial workflow artifact structure.
+- Use `new-task` for parent task cards under `tasks/active/`.
+- Use `new-subtask` for delegated slices under `tasks/active/`.
+- Use `new-adr` for durable technical decisions.
+- Archive completed tasks from `tasks/active/` into `tasks/history/`, then refresh `docs/process.md`.
+- Use `handoff-template` when producing a session handoff block.
+- Update existing docs manually only after the right workflow artifact has been created through the local script when such a script exists.
+
+## Git Workflow
+
+Follow [`{sdd_dir}/docs/git-workflow.md`](./{sdd_dir}/docs/git-workflow.md) for branch naming, Conventional Commits, and PR readiness.
+After verification, follow `TASK_COMPLETION_GIT_MODE` in [`{sdd_dir}/workflow-config.env`](./{sdd_dir}/workflow-config.env): commit only when allowed, otherwise record why the work is not committed and provide a recommended commit message.
+
+## Done Means
+
+1. code changes are complete
+2. targeted tests or checks have run
+3. docs, task state, and risks are updated
+4. Git closure is recorded: committed, or not committed with reason and recommended commit message
+5. the branch and commit are ready for handoff or PR

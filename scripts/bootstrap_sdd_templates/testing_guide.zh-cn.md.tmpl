@@ -1,0 +1,30 @@
+# 测试指南
+
+## 原则
+
+- 从最小且可能失败的测试开始。
+- 优先做针对性的验证，再跑更宽的测试。
+- 只记录在本仓库里真实可用的命令。
+
+## 快速检查
+
+- workflow 结构：
+  - `{workflow_scripts}/validate-sdd.ps1 -Strict`
+  - `{workflow_scripts}/validate-sdd.sh --strict`
+- 任务启动：
+  - `{workflow_scripts}/session-brief.ps1`
+  - `{workflow_scripts}/session-brief.sh`
+
+## 项目级检查
+
+{stack_defaults}
+
+## Quality Gate
+
+在宣布任务完成前：
+
+1. 目标测试通过
+2. 改动文件中没有新增诊断错误
+3. 行为变化、任务状态与风险已经记录
+4. Git handoff 已记录：已提交，或未提交并说明原因和推荐 commit message
+5. branch、commit 与 PR readiness 符合 `docs/git-workflow.md`

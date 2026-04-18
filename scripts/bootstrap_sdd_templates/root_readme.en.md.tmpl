@@ -1,0 +1,24 @@
+# {repo_name}
+
+This repository uses a Codex-oriented workflow with durable state under [`{sdd_dir}/`](./{sdd_dir}/).
+
+## Start Here
+
+- agent operating rules: [`AGENTS.md`](./AGENTS.md)
+- workflow overview: [`{sdd_dir}/workflow.md`](./{sdd_dir}/workflow.md)
+- process summary: [`{sdd_dir}/docs/process.md`](./{sdd_dir}/docs/process.md)
+- project progress: [`{sdd_dir}/docs/progress.md`](./{sdd_dir}/docs/progress.md)
+
+## Daily Commands
+
+```sh
+./{sdd_dir}/scripts/session-brief.sh
+./{sdd_dir}/scripts/validate-sdd.sh --strict
+./{sdd_dir}/scripts/new-task.sh "Describe the next change"
+```
+
+```powershell
+./{sdd_dir}/scripts/session-brief.ps1
+./{sdd_dir}/scripts/validate-sdd.ps1 -Strict
+./{sdd_dir}/scripts/new-task.ps1 "Describe the next change"
+```

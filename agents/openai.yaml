@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex SDD Workflow"
+  short_description: "Bootstrap or upgrade a durable repo workflow."
+  default_prompt: "Use $codex-sdd-workflow to bootstrap or upgrade a durable workflow in this existing repo; if I have not chosen lite or full, ask first, then guide me into the generated workflow entrypoints."

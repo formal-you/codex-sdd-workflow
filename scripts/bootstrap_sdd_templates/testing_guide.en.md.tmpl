@@ -1,0 +1,30 @@
+# Testing Guide
+
+## Principles
+
+- Start with the smallest test that can fail for the change.
+- Prefer targeted verification before broad suite runs.
+- Record commands that actually work in this repo.
+
+## Fast Checks
+
+- workflow structure:
+  - `{workflow_scripts}/validate-sdd.ps1 -Strict`
+  - `{workflow_scripts}/validate-sdd.sh --strict`
+- task startup:
+  - `{workflow_scripts}/session-brief.ps1`
+  - `{workflow_scripts}/session-brief.sh`
+
+## Project-Specific Checks
+
+{stack_defaults}
+
+## Quality Gates
+
+Before claiming a task is done:
+
+1. targeted tests pass
+2. no new diagnostics remain in changed files
+3. behavior, task state, and risks are documented
+4. Git closure is documented: committed, or not committed with reason and recommended commit message
+5. branch, commit, and PR readiness match `docs/git-workflow.md`

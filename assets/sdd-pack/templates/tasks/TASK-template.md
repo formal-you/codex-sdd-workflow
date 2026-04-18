@@ -1,0 +1,80 @@
+# TASK-XXX: Short Task Name
+
+## Status
+
+- [ ] draft / ready / in_progress / blocked / done
+
+## Objective
+
+State the change in one or two sentences.
+
+## Why
+
+- [ ] user impact:
+- [ ] technical reason:
+
+## Required Context
+
+- [ ] relevant docs:
+- [ ] relevant code paths:
+- [ ] assumptions already checked:
+
+## Decomposition Decision
+
+- [ ] decomposition decision: single_task / parallel_subtasks / sequential_subtasks
+- [ ] parallelization candidate: yes / no
+- [ ] integration owner: main agent
+- [ ] subtask links:
+  - [ ] none
+
+## Editable Scope
+
+Only these files or modules may be changed:
+
+- [ ] `path/to/file_or_module`
+
+## Do Not Touch
+
+- [ ] unrelated modules
+- [ ] build or deployment config unless explicitly required
+- [ ] generated files unless regeneration is part of acceptance
+- [ ] user changes outside the owned scope
+
+## Acceptance Criteria
+
+1. behavior:
+2. regression protection:
+3. docs or config updates:
+
+## Verification
+
+Run the smallest useful checks first.
+
+- [ ] command:
+- [ ] command:
+
+## Completion Handoff
+
+- [ ] git status checked:
+- [ ] commit mode: manual / auto
+- [ ] commit status: not committed / committed
+- [ ] uncommitted reason:
+- [ ] recommended commit message:
+- [ ] next active task:
+- [ ] recommended next step:
+- [ ] backlog item if using full profile:
+- [ ] no next step because:
+
+## Output Format For Subagent
+
+Return:
+
+1. files changed
+2. summary of behavior change
+3. tests and results
+4. remaining risks or follow-ups
+
+## Notes
+
+- [ ] caveat:
+- [ ] open question:

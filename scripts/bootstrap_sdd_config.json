@@ -1,0 +1,46 @@
+{
+  "pack_roots": {
+    "en": "assets/sdd-pack",
+    "zh-cn": "assets/sdd-pack-zh-cn"
+  },
+  "lang_choices": [
+    "zh-cn",
+    "en"
+  ],
+  "stack_choices": [
+    "generic",
+    "go",
+    "node",
+    "python"
+  ],
+  "git_mode_choices": [
+    "auto",
+    "init",
+    "skip"
+  ],
+  "workflow_profile_choices": [
+    "lite",
+    "full"
+  ],
+  "text_rewrite_suffixes": [
+    ".md",
+    ".ps1",
+    ".sh",
+    ".example",
+    ".yml",
+    ".yaml"
+  ],
+  "core_directories": [
+    "docs",
+    "tasks",
+    "templates",
+    "adr",
+    "evidence",
+    "scripts"
+  ],
+  "root_files": [
+    "README.md",
+    "workflow.md"
+  ],
+  "full_profile_dir": "profile-full"
+}

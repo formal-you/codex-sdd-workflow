@@ -1,0 +1,17 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 校验 workflow 结构
+        run: ./SDD/scripts/validate-sdd.sh --strict
+      - name: 项目检查
+        run: echo "替换为本仓库真实使用的 lint、test、build 命令。"

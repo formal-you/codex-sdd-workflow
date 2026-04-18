@@ -1,0 +1,24 @@
+# {repo_name}
+
+本仓库使用面向 Codex 的 repo-local workflow，durable state 位于 [`{sdd_dir}/`](./{sdd_dir}/)。
+
+## 从这里开始
+
+- agent 规则入口：[`AGENTS.md`](./AGENTS.md)
+- workflow 说明：[`{sdd_dir}/workflow.md`](./{sdd_dir}/workflow.md)
+- Process Summary：[`{sdd_dir}/docs/process.md`](./{sdd_dir}/docs/process.md)
+- 项目进度：[`{sdd_dir}/docs/progress.md`](./{sdd_dir}/docs/progress.md)
+
+## 日常命令
+
+```sh
+./{sdd_dir}/scripts/session-brief.sh
+./{sdd_dir}/scripts/validate-sdd.sh --strict
+./{sdd_dir}/scripts/new-task.sh "描述下一项变更"
+```
+
+```powershell
+./{sdd_dir}/scripts/session-brief.ps1
+./{sdd_dir}/scripts/validate-sdd.ps1 -Strict
+./{sdd_dir}/scripts/new-task.ps1 "描述下一项变更"
+```

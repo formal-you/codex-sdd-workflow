@@ -1,0 +1,17 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate workflow structure
+        run: ./SDD/scripts/validate-sdd.sh --strict
+      - name: Project checks
+        run: echo "Replace with the repo's real lint, test, and build commands."
