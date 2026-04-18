@@ -4,7 +4,7 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-用法: handoff-template.sh [--root /path/to/SDD] [--task TASK] [--file PATH] [--command CMD] [--risk TEXT] [--next TEXT]
+Usage: handoff-template.sh [--root /path/to/SDD] [--task TASK] [--file PATH] [--command CMD] [--risk TEXT] [--next TEXT]
        [--commit-status TEXT] [--commit-message TEXT] [--uncommitted-reason TEXT]
 EOF
 }
@@ -18,6 +18,8 @@ next_action=""
 commit_status=""
 commit_message=""
 uncommitted_reason=""
+hot_state_branch_dir="state/hot/branches"
+hot_state_task_dir="state/hot/tasks"
 declare -a files_touched=()
 declare -a commands_run=()
 
@@ -70,6 +72,24 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [[ -f "$root/workflow-config.env" ]]; then
+  while IFS='=' read -r key value; do
+    value="${value%$'\r'}"
+    case "$key" in
+      HOT_STATE_BRANCH_DIR)
+        hot_state_branch_dir="$value"
+        ;;
+      HOT_STATE_TASK_DIR)
+        hot_state_task_dir="$value"
+        ;;
+    esac
+  done < "$root/workflow-config.env"
+fi
+
+sanitize_hot_state_name() {
+  printf '%s' "$1" | sed -E 's#/#__#g; s#[^A-Za-z0-9._-]+#-#g; s#-+#-#g; s#^-+##; s#-+$##'
+}
+
 timestamp="$(date '+%Y-%m-%d %H:%M:%S %z')"
 git_root="$(git -C "$repo_root" rev-parse --show-toplevel 2>/dev/null || true)"
 if [[ -n "$git_root" ]]; then
@@ -88,13 +108,25 @@ else
   git_status=""
 fi
 
-printf '## Session Handoff\n\n'
-printf -- '- [x] 时间戳: %s\n' "$timestamp"
-printf -- '- [x] 分支: %s\n' "$branch"
-printf -- '- [x] git 范围: %s\n' "$git_scope"
-printf -- '- [ ] active task: %s\n' "$current_task"
+branch_hot_state_path=""
+if [[ -n "$branch" && "$branch" != "unknown" && "$branch" != "unborn-or-detached" ]]; then
+  branch_hot_state_path="$hot_state_branch_dir/$(sanitize_hot_state_name "$branch").md"
+fi
 
-printf -- '- [ ] 涉及文件:\n'
+task_hot_state_path=""
+if [[ -n "$current_task" ]]; then
+  task_hot_state_path="$hot_state_task_dir/$(basename "$current_task")"
+fi
+
+printf '## Session Handoff\n\n'
+printf -- '- [x] timestamp: %s\n' "$timestamp"
+printf -- '- [x] branch: %s\n' "$branch"
+printf -- '- [x] git scope: %s\n' "$git_scope"
+printf -- '- [ ] active task: %s\n' "$current_task"
+printf -- '- [ ] branch hot state file: %s\n' "$branch_hot_state_path"
+printf -- '- [ ] task hot state file: %s\n' "$task_hot_state_path"
+
+printf -- '- [ ] files touched:\n'
 if (( ${#files_touched[@]} > 0 )); then
   for item in "${files_touched[@]}"; do
     printf -- '  - [ ] %s\n' "$item"
@@ -103,7 +135,7 @@ else
   printf -- '  - [ ] \n'
 fi
 
-printf -- '- [ ] 执行命令:\n'
+printf -- '- [ ] commands run:\n'
 if (( ${#commands_run[@]} > 0 )); then
   for item in "${commands_run[@]}"; do
     printf -- '  - [ ] %s\n' "$item"
@@ -112,18 +144,18 @@ else
   printf -- '  - [ ] \n'
 fi
 
-printf -- '- [ ] 未解决风险或 blocker：%s\n' "$risk"
+printf -- '- [ ] open risk or blocker: %s\n' "$risk"
 printf -- '- [ ] commit status: %s\n' "$commit_status"
-printf -- '- [ ] 未提交原因: %s\n' "$uncommitted_reason"
-printf -- '- [ ] 推荐 commit message: %s\n' "$commit_message"
-printf -- '- [ ] 推荐的下一步明确动作：%s\n' "$next_action"
-printf -- '- [ ] 等待用户决策：\n'
-printf -- '- [ ] 无需下一步原因：\n'
-printf -- '- [x] git 状态快照:\n'
+printf -- '- [ ] uncommitted reason: %s\n' "$uncommitted_reason"
+printf -- '- [ ] recommended commit message: %s\n' "$commit_message"
+printf -- '- [ ] recommended next step: %s\n' "$next_action"
+printf -- '- [ ] waiting on user decision: \n'
+printf -- '- [ ] no next step because: \n'
+printf -- '- [x] git status snapshot:\n'
 if [[ -n "$git_status" ]]; then
   while IFS= read -r line; do
     printf -- '  - [x] %s\n' "$line"
   done <<< "$git_status"
 else
-  printf -- '  - [x] 工作区干净或 git 不可用\n'
+  printf -- '  - [x] clean or unavailable\n'
 fi

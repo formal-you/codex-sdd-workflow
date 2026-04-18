@@ -13,6 +13,10 @@ def parse_args(settings: BootstrapSettings) -> argparse.Namespace:
     parser.add_argument("--stack", choices=settings.stack_choices, default="generic", help="Project stack profile used for template defaults.")
     parser.add_argument("--workflow-profile", choices=settings.workflow_profile_choices, default="lite", help="Workflow profile. lite keeps the pack minimal; full adds backlog, sprint, release, and automation scaffolding.")
     parser.add_argument("--git-mode", choices=settings.git_mode_choices, default="auto", help="Git repo bootstrap mode. auto initializes a repo only when the target is not already inside one.")
+    parser.add_argument(
+        "--template-overlay",
+        help="Optional path to a template overlay directory. Supported overlays may replace specific task, subtask, evidence, or release templates while preserving the parser contract.",
+    )
     parser.add_argument("--force", action="store_true", help="Replace an existing workflow directory in the target repo.")
     parser.add_argument("--force-root-shims", action="store_true", help="Also overwrite root README.md and AGENTS.md when they already exist.")
     parser.add_argument("--dry-run", action="store_true", help="Print actions without writing files.")

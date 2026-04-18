@@ -26,6 +26,8 @@
   - 项目简介、流程摘要、架构、测试、Git workflow、进度和 audit
 - `tasks/`
   - active task、历史归档与任务索引
+- `state/`
+  - branch-aware 与 task-aware 热状态便签，以及退役热状态历史
 - `templates/`
   - task、subtask、ADR 和 evidence 的模板
 - `adr/`
@@ -42,8 +44,9 @@
 3. 创建或更新 task card
 4. 多任务或天然可拆任务先写拆分判断；如果适合并行，先创建 subtasks，再进入实现
 5. 已完成的 task 从 `tasks/active/` 归档到 `tasks/history/`，并把长期摘要写入 `docs/process.md`
-6. 保持最终集成和验证由主 agent 负责
-7. 验证 workflow 本身时补 evidence
+6. branch/task 级细节便签写到 `state/hot/`，共享恢复信号再回写 `docs/progress.md`
+7. 保持最终集成和验证由主 agent 负责
+8. 验证 workflow 本身时补 evidence
 
 ## Git 基线
 

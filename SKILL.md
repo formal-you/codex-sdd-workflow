@@ -1,6 +1,6 @@
 ---
 name: codex-sdd-workflow
-description: Bootstrap or upgrade a durable Codex workflow inside an existing repository, with task graphs, handoff docs, local repo scripts, and optional lite or full operating models. Use when Codex needs to initialize or refresh repo-local workflow scaffolding for session recovery, durable docs, parent tasks, subtasks, git collaboration rules, agile delivery scaffolding, or CI/CD-oriented workflow structure.
+description: Bootstrap or upgrade a durable Codex workflow inside an existing repository, with task graphs, handoff docs, branch/task hot-state notes, local repo scripts, optional template overlays, and lite or full operating models. Use when Codex needs to initialize or refresh repo-local workflow scaffolding for session recovery, durable docs, parent tasks, subtasks, git collaboration rules, agile delivery scaffolding, connector hooks, or CI/CD-oriented workflow structure.
 ---
 
 # Codex SDD Workflow
@@ -17,6 +17,7 @@ Core working rules:
 - create subtasks before implementation when parallel work is justified
 - keep templates separate from generated artifacts
 - keep live work in `tasks/active/`, archive finished work in `tasks/history/`, and update `docs/process.md`
+- keep shared recovery state in `docs/progress.md`, and keep branch-local or task-local scratch notes in `state/hot/`
 - before finishing or archiving work, leave a next-step entry so the next session can continue with direction, not just state
 - before closing completed work, follow the generated repo's Git completion mode and either commit or record why it is not committed
 
@@ -42,12 +43,14 @@ Use `--no-root-shims` only when the repo should keep its own root contract. In t
 
 Do not explain every CLI variant inline here. Route detailed command choices to the references below.
 
+Use `--template-overlay /path/to/overlay` only when the user explicitly wants organization-specific template customization. Overlays must preserve the generated workflow parser contract.
+
 ## Profile Choice Rule
 
 Before bootstrapping, if the user has not already picked an operating model, ask them to choose one of:
 
 - `lite`: focused engineering execution with durable docs, task cards, validation, and handoff
-- `full`: adds backlog, sprint, release, and CI/CD scaffolding on top of the execution workflow
+- `full`: adds backlog, sprint, release, connector hooks, and CI/CD scaffolding on top of the execution workflow
 
 Default to `lite` when the user has not said they want broader agile or delivery management structure.
 
@@ -63,6 +66,12 @@ If no recommendation is possible, record the waiting user decision, candidate op
 
 Use Markdown checkbox semantics in generated workflow docs: `[ ]` means unfinished, pending, or unconfirmed; `[x]` means completed or confirmed.
 
+## Hot-State Discipline
+
+Keep `docs/progress.md` as the shared aggregate recovery note. Put high-frequency branch or task scratch notes under `state/hot/` so multi-branch work does not turn `progress.md` into a merge hotspot.
+
+When archiving a task, retire or summarize any matching task-local hot-state note.
+
 ## Git Completion Closure
 
 When a task is complete and verification passed, follow `TASK_COMPLETION_GIT_MODE` in the generated `workflow-config.env`:
@@ -71,6 +80,12 @@ When a task is complete and verification passed, follow `TASK_COMPLETION_GIT_MOD
 - `auto`: the main agent may commit only after scope, tests, and user changes are clear
 
 Subagents never own the final commit. When subtasks are used, the main agent owns integration and Git closure.
+
+## Full Profile Boundary
+
+Treat `full` as repo-local agile delivery scaffolding, not as the only source of truth for planning.
+
+When a team already uses GitHub Issues, Jira, Linear, or another tracker, use the generated connector hooks as pull-first context entrypoints. Do not promise bidirectional synchronization unless a later implementation explicitly adds it.
 
 ## Reference Routing
 

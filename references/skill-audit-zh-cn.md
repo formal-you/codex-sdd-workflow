@@ -75,7 +75,8 @@
 
 1. 已经很好地支持“准确开发”与“主 agent + 多 subagent”工作模式，且职责边界清楚。
 2. 本地 durable workflow artifacts 齐全，能显著降低 session 丢失、上下文飘移和口头约定失真。
-3. 结构轻、启动快、约束明确，适合作为多数仓库的默认工程执行 workflow。
+3. 已开始把 branch/task 级热状态从共享 `progress.md` 中拆出，降低了多人或多分支协作时的共享热点。
+4. 结构轻、启动快、约束明确，适合作为多数仓库的默认工程执行 workflow。
 
 ### Lite 缺口
 
@@ -115,7 +116,8 @@
 
 1. 已经把 backlog、sprint、release、automation 的基本 scaffolding 真正落到仓库里，而不是只停留在口头建议。
 2. 能从 `lite` 平滑抬升到更完整的项目交付模型，且不破坏原有 task/subtask 主线。
-3. 对项目演进与多人协作的支持明显强于纯工程执行流，已经具备中小团队试用价值。
+3. 已经开始为外部 issue 系统预留 connector-first 的配置位和 stub entrypoints，方向比单纯扩本地文本面板更稳。
+4. 对项目演进与多人协作的支持明显强于纯工程执行流，已经具备中小团队试用价值。
 
 ### Full 缺口
 

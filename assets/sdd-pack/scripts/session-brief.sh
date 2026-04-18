@@ -9,9 +9,14 @@ progress_path="$root/docs/progress.md"
 process_path="$root/docs/process.md"
 active_tasks_dir="$root/tasks/active"
 history_tasks_dir="$root/tasks/history"
-git_root="$(git -C "$repo_root" rev-parse --show-toplevel 2>/dev/null || true)"
 workflow_profile="lite"
 task_completion_git_mode="manual"
+hot_state_mode="branch-aware"
+hot_state_branch_dir="state/hot/branches"
+hot_state_task_dir="state/hot/tasks"
+external_issue_source="none"
+connector_mode="pull-only"
+
 if [[ -f "$root/workflow-config.env" ]]; then
   while IFS='=' read -r key value; do
     value="${value%$'\r'}"
@@ -21,6 +26,21 @@ if [[ -f "$root/workflow-config.env" ]]; then
         ;;
       TASK_COMPLETION_GIT_MODE)
         task_completion_git_mode="$value"
+        ;;
+      HOT_STATE_MODE)
+        hot_state_mode="$value"
+        ;;
+      HOT_STATE_BRANCH_DIR)
+        hot_state_branch_dir="$value"
+        ;;
+      HOT_STATE_TASK_DIR)
+        hot_state_task_dir="$value"
+        ;;
+      EXTERNAL_ISSUE_SOURCE)
+        external_issue_source="$value"
+        ;;
+      CONNECTOR_MODE)
+        connector_mode="$value"
         ;;
     esac
   done < "$root/workflow-config.env"
@@ -35,8 +55,32 @@ section() {
   ' "$2"
 }
 
+sanitize_hot_state_name() {
+  printf '%s' "$1" | sed -E 's#/#__#g; s#[^A-Za-z0-9._-]+#-#g; s#-+#-#g; s#^-+##; s#-+$##'
+}
+
+extract_current_task_ref() {
+  [[ -f "$progress_path" ]] || return 0
+  local current_body
+  current_body="$(section "Current" "$progress_path")"
+  printf '%s\n' "$current_body" | sed -nE 's/^[[:space:]]*-[[:space:]]*\[[ xX]\][[:space:]]*active task:[[:space:]]*`?([^`]+)`?.*$/\1/p' | head -n 1
+}
+
+print_markdown_file_as_section() {
+  local heading="$1"
+  local path="$2"
+  local empty_message="$3"
+  printf '## %s\n' "$heading"
+  if [[ -f "$path" ]]; then
+    cat "$path"
+  else
+    printf -- '- %s\n' "$empty_message"
+  fi
+  printf '\n'
+}
+
 timestamp="$(date '+%Y-%m-%d %H:%M:%S %z')"
-if [[ -n "$git_root" ]]; then
+if git_root="$(git -C "$repo_root" rev-parse --show-toplevel 2>/dev/null)"; then
   branch="$(git -C "$git_root" symbolic-ref --quiet --short HEAD 2>/dev/null || printf 'unborn-or-detached')"
   if [[ "$repo_root" == "$git_root" ]]; then
     git_scope="."
@@ -47,9 +91,22 @@ if [[ -n "$git_root" ]]; then
   fi
   git_status="$(git -C "$git_root" status --short -- "$git_scope" 2>/dev/null || true)"
 else
+  git_root=""
   branch="unknown"
   git_scope="."
   git_status=""
+fi
+
+branch_hot_state_path=""
+if [[ -n "$branch" && "$branch" != "unknown" && "$branch" != "unborn-or-detached" ]]; then
+  safe_branch_name="$(sanitize_hot_state_name "$branch")"
+  branch_hot_state_path="$root/$hot_state_branch_dir/$safe_branch_name.md"
+fi
+
+current_task_ref="$(extract_current_task_ref)"
+task_hot_state_path=""
+if [[ -n "$current_task_ref" && "$current_task_ref" != "none" && "$current_task_ref" != *"TASK-XXX"* ]]; then
+  task_hot_state_path="$root/$hot_state_task_dir/$(basename "$current_task_ref")"
 fi
 
 printf '# Session Brief\n\n'
@@ -57,6 +114,9 @@ printf -- '- repo root: %s\n' "$repo_root"
 printf -- '- workflow root: %s\n' "$root"
 printf -- '- workflow profile: %s\n' "$workflow_profile"
 printf -- '- task completion git mode: %s\n' "$task_completion_git_mode"
+printf -- '- hot state mode: %s\n' "$hot_state_mode"
+printf -- '- external issue source: %s\n' "$external_issue_source"
+printf -- '- connector mode: %s\n' "$connector_mode"
 printf -- '- timestamp: %s\n' "$timestamp"
 printf -- '- branch: %s\n' "$branch"
 printf -- '- git scope: %s\n\n' "$git_scope"
@@ -78,6 +138,14 @@ for heading in "Current" "Recent Findings" "Session Handoff" "Concurrency" "Curr
     fi
   fi
 done
+
+if [[ -n "$branch_hot_state_path" ]]; then
+  print_markdown_file_as_section "Active Branch Hot State" "$branch_hot_state_path" "no branch-local hot-state note for the current branch"
+fi
+
+if [[ -n "$task_hot_state_path" ]]; then
+  print_markdown_file_as_section "Active Task Hot State" "$task_hot_state_path" "no task-local hot-state note for the current active task"
+fi
 
 printf '## Git Status\n'
 if [[ -n "$git_status" ]]; then

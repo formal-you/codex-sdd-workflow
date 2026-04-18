@@ -14,6 +14,11 @@ $activeTasksDir = Join-Path $Root "tasks\active"
 $historyTasksDir = Join-Path $Root "tasks\history"
 $workflowProfile = "lite"
 $taskCompletionGitMode = "manual"
+$hotStateMode = "branch-aware"
+$hotStateBranchDir = "state/hot/branches"
+$hotStateTaskDir = "state/hot/tasks"
+$externalIssueSource = "none"
+$connectorMode = "pull-only"
 try {
     foreach ($line in Get-Content -LiteralPath (Join-Path $Root "workflow-config.env") -ErrorAction Stop) {
         if ($line -match "^\s*WORKFLOW_PROFILE=(.+?)\s*$") {
@@ -21,6 +26,21 @@ try {
         }
         if ($line -match "^\s*TASK_COMPLETION_GIT_MODE=(.+?)\s*$") {
             $taskCompletionGitMode = $matches[1].Trim()
+        }
+        if ($line -match "^\s*HOT_STATE_MODE=(.+?)\s*$") {
+            $hotStateMode = $matches[1].Trim()
+        }
+        if ($line -match "^\s*HOT_STATE_BRANCH_DIR=(.+?)\s*$") {
+            $hotStateBranchDir = $matches[1].Trim()
+        }
+        if ($line -match "^\s*HOT_STATE_TASK_DIR=(.+?)\s*$") {
+            $hotStateTaskDir = $matches[1].Trim()
+        }
+        if ($line -match "^\s*EXTERNAL_ISSUE_SOURCE=(.+?)\s*$") {
+            $externalIssueSource = $matches[1].Trim()
+        }
+        if ($line -match "^\s*CONNECTOR_MODE=(.+?)\s*$") {
+            $connectorMode = $matches[1].Trim()
         }
     }
 } catch {
@@ -58,6 +78,44 @@ function Get-MarkdownSection {
     return ($lines -join [Environment]::NewLine).Trim()
 }
 
+function ConvertTo-HotStateSafeName {
+    param([string]$Value)
+
+    $safe = $Value -replace "/", "__"
+    $safe = $safe -replace "[^A-Za-z0-9._-]+", "-"
+    $safe = $safe -replace "-+", "-"
+    return $safe.Trim("-")
+}
+
+function Get-CurrentTaskReference {
+    if (-not (Test-Path -LiteralPath $progressPath)) {
+        return ""
+    }
+    $currentBody = Get-MarkdownSection -Path $progressPath -Heading "Current"
+    foreach ($line in ($currentBody -split "`r?`n")) {
+        if ($line -match "^\s*-\s*\[[ xX]\]\s*active task:\s*(.+?)\s*$") {
+            return $matches[1].Trim().Trim([char]96)
+        }
+    }
+    return ""
+}
+
+function Write-MarkdownFileSection {
+    param(
+        [string]$Heading,
+        [string]$Path,
+        [string]$EmptyMessage
+    )
+
+    Write-Output "## $Heading"
+    if (Test-Path -LiteralPath $Path) {
+        Get-Content -LiteralPath $Path | Write-Output
+    } else {
+        Write-Output "- $EmptyMessage"
+    }
+    Write-Output ""
+}
+
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"
 $branch = "unknown"
 $gitRoot = ""
@@ -66,16 +124,18 @@ try {
     $gitRoot = (git -C $repoRoot rev-parse --show-toplevel 2>$null).Trim()
     $gitRoot = ([System.IO.Path]::GetFullPath($gitRoot)).TrimEnd('\', '/')
     $repoRoot = ([System.IO.Path]::GetFullPath($repoRoot)).TrimEnd('\', '/')
-    $branch = (git -C $gitRoot symbolic-ref --quiet --short HEAD 2>$null).Trim()
-    if ([string]::IsNullOrWhiteSpace($branch)) {
-        $branch = "unborn-or-detached"
-    }
-    if ($repoRoot -eq $gitRoot) {
-        $gitScope = "."
-    } elseif ($repoRoot.StartsWith("$gitRoot\", [System.StringComparison]::OrdinalIgnoreCase)) {
-        $gitScope = $repoRoot.Substring($gitRoot.Length + 1)
-    } else {
-        $gitScope = "."
+    if (-not [string]::IsNullOrWhiteSpace($gitRoot)) {
+        $branch = (git -C $gitRoot symbolic-ref --quiet --short HEAD 2>$null).Trim()
+        if ([string]::IsNullOrWhiteSpace($branch)) {
+            $branch = "unborn-or-detached"
+        }
+        if ($repoRoot -eq $gitRoot) {
+            $gitScope = "."
+        } elseif ($repoRoot.StartsWith("$gitRoot\", [System.StringComparison]::OrdinalIgnoreCase)) {
+            $gitScope = $repoRoot.Substring($gitRoot.Length + 1)
+        } else {
+            $gitScope = "."
+        }
     }
 } catch {
 }
@@ -90,12 +150,28 @@ try {
 } catch {
 }
 
+$branchHotStatePath = ""
+if ($branch -and $branch -notin @("unknown", "unborn-or-detached")) {
+    $branchHotStatePath = Join-Path $Root $hotStateBranchDir
+    $branchHotStatePath = Join-Path $branchHotStatePath ("{0}.md" -f (ConvertTo-HotStateSafeName $branch))
+}
+
+$taskHotStatePath = ""
+$currentTaskRef = Get-CurrentTaskReference
+if ($currentTaskRef -and $currentTaskRef -ne "none" -and $currentTaskRef -notmatch "TASK-XXX") {
+    $taskHotStatePath = Join-Path $Root $hotStateTaskDir
+    $taskHotStatePath = Join-Path $taskHotStatePath ([System.IO.Path]::GetFileName($currentTaskRef))
+}
+
 Write-Output "# Session Brief"
 Write-Output ""
 Write-Output "- repo root: $repoRoot"
 Write-Output "- workflow root: $Root"
 Write-Output "- workflow profile: $workflowProfile"
 Write-Output "- task completion git mode: $taskCompletionGitMode"
+Write-Output "- hot state mode: $hotStateMode"
+Write-Output "- external issue source: $externalIssueSource"
+Write-Output "- connector mode: $connectorMode"
 Write-Output "- timestamp: $timestamp"
 Write-Output "- branch: $branch"
 Write-Output "- git scope: $gitScope"
@@ -117,6 +193,14 @@ foreach ($heading in @("Current", "Recent Findings", "Session Handoff", "Concurr
         Write-Output $body
         Write-Output ""
     }
+}
+
+if ($branchHotStatePath) {
+    Write-MarkdownFileSection -Heading "Active Branch Hot State" -Path $branchHotStatePath -EmptyMessage "no branch-local hot-state note for the current branch"
+}
+
+if ($taskHotStatePath) {
+    Write-MarkdownFileSection -Heading "Active Task Hot State" -Path $taskHotStatePath -EmptyMessage "no task-local hot-state note for the current active task"
 }
 
 Write-Output "## Git Status"

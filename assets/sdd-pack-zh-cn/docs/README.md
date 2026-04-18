@@ -12,8 +12,9 @@
 6. `testing.md`
 7. `git-workflow.md`
 8. `progress.md`
-9. `../tasks/active/` 中与当前任务相关的文件
-10. `../adr/records/` 中相关的决策记录
+9. `../state/README.md`
+10. `../tasks/active/` 中与当前任务相关的文件
+11. `../adr/records/` 中相关的决策记录
 
 ## 文件职责
 
@@ -22,8 +23,9 @@
 - `architecture.md`：模块划分、ownership 与高风险区域
 - `testing.md`：测试命令与 Quality Gate
 - `git-workflow.md`：分支命名、提交规范与 PR 准备
-- `progress.md`：短时状态追踪与 Session Handoff
+- `progress.md`：聚合热状态摘要与 Session Handoff
 - `workflow-audit.md`：验证 workflow 本身时的评分和结论
+- `../state/`：branch-aware 与 task-aware 的热状态便签，避免把 `progress.md` 写成共享热点
 
 ## Full Profile 增量内容
 

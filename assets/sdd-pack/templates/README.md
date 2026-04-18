@@ -4,6 +4,8 @@ This folder stores templates only. Do not place real work artifacts here.
 
 ## Layout
 
+- `overlays/`
+  - optional overlay manifests and active overlay snapshots
 - `tasks/`
   - `TASK-template.md`
   - `SUBTASK-template.md`
@@ -17,3 +19,4 @@ This folder stores templates only. Do not place real work artifacts here.
 - create real artifacts through `SDD/scripts/`
 - keep concrete tasks, ADRs, and evidence outside this folder
 - when templates change, prefer upgrading through the skill
+- use overlays only for supported template kinds; do not break required headings or checkbox fields

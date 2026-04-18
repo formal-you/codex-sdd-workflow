@@ -24,6 +24,8 @@
   - durable docs、流程摘要、测试指引、Git workflow 与 audit 记录
 - `tasks/`
   - `active/` 存放当前 active task 与 subtask，`history/` 存放已归档任务
+- `state/`
+  - `hot/` 存放 branch-aware 或 task-aware 的热状态便签，`history/` 存放已退役的热状态记录
 - `templates/`
   - workflow 模板库；模板与真实 artifact 分离
 - `adr/`
@@ -61,12 +63,13 @@
 ## 进度与归档规则
 
 - `docs/process.md` 是长期项目视角，记录 milestone、归档规则、近期历史和目录指针
-- `docs/progress.md` 是短时状态追踪与 Session Handoff，不承担 task board 或完整项目历史
+- `docs/progress.md` 是聚合热状态摘要与 Session Handoff，不承担 task board 或完整项目历史
+- branch/task 级细节便签请维护在 `state/hot/`
 - workflow 状态文档里，用 `[ ]` 表示未完成、待推进或待确认，用 `[x]` 表示已完成或已确认
 - 当某个 task 或 subtask 已完成且不再活跃时，把它从 `tasks/active/` 移入 `tasks/history/`
 - 归档前，必须留下一个 next-step entry：`docs/progress.md` 中的“推荐的下一步明确动作”，或 full profile 下的 backlog 条目
 - 如果暂时无法推荐下一步，在 `docs/progress.md` 写清楚等待用户决策或终态原因
-- 归档后，在 `docs/process.md` 中更新近期归档摘要
+- 归档后，在 `docs/process.md` 中更新近期归档摘要，并退役不再需要的 task 级热状态记录
 
 ## Git Workflow
 

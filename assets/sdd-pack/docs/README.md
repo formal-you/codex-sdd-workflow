@@ -12,8 +12,9 @@ Use this folder as the durable memory layer for the repository.
 6. `testing.md`
 7. `git-workflow.md`
 8. `progress.md`
-9. the relevant file in `../tasks/active/`
-10. any relevant file in `../adr/records/`
+9. `../state/README.md`
+10. the relevant file in `../tasks/active/`
+11. any relevant file in `../adr/records/`
 
 ## File Roles
 
@@ -22,8 +23,9 @@ Use this folder as the durable memory layer for the repository.
 - `architecture.md`: module map, ownership, risky areas
 - `testing.md`: commands and quality gates
 - `git-workflow.md`: branch naming, commit conventions, PR readiness
-- `progress.md`: short-lived state tracking and session handoff
+- `progress.md`: aggregate hot-state summary and session handoff
 - `workflow-audit.md`: scorecard and findings from validating the workflow itself
+- `../state/`: branch-aware and task-aware hot-state notes that should not bloat `progress.md`
 
 ## Full Profile Additions
 

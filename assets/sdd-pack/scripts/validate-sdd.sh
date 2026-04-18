@@ -30,7 +30,16 @@ done
 config_path="$root/workflow-config.env"
 root_shims_enabled=1
 workflow_profile="lite"
+lang="en"
 task_completion_git_mode="manual"
+hot_state_mode="branch-aware"
+hot_state_branch_dir="state/hot/branches"
+hot_state_task_dir="state/hot/tasks"
+hot_state_history_dir="state/history"
+external_issue_source="none"
+connector_mode="pull-only"
+template_overlay="none"
+
 if [[ -f "$config_path" ]]; then
   while IFS='=' read -r key value; do
     value="${value%$'\r'}"
@@ -43,8 +52,32 @@ if [[ -f "$config_path" ]]; then
       WORKFLOW_PROFILE)
         workflow_profile="$value"
         ;;
+      LANG)
+        lang="$value"
+        ;;
       TASK_COMPLETION_GIT_MODE)
         task_completion_git_mode="$value"
+        ;;
+      HOT_STATE_MODE)
+        hot_state_mode="$value"
+        ;;
+      HOT_STATE_BRANCH_DIR)
+        hot_state_branch_dir="$value"
+        ;;
+      HOT_STATE_TASK_DIR)
+        hot_state_task_dir="$value"
+        ;;
+      HOT_STATE_HISTORY_DIR)
+        hot_state_history_dir="$value"
+        ;;
+      EXTERNAL_ISSUE_SOURCE)
+        external_issue_source="$value"
+        ;;
+      CONNECTOR_MODE)
+        connector_mode="$value"
+        ;;
+      TEMPLATE_OVERLAY)
+        template_overlay="$value"
         ;;
     esac
   done < "$config_path"
@@ -64,6 +97,7 @@ required_paths=(
   "tasks/active"
   "tasks/history"
   "templates/README.md"
+  "templates/overlays/README.md"
   "templates/tasks/TASK-template.md"
   "templates/tasks/SUBTASK-template.md"
   "templates/adr/ADR-000-template.md"
@@ -85,6 +119,10 @@ required_paths=(
   "scripts/handoff-template.ps1"
   "scripts/handoff-template.sh"
   "evidence/README.md"
+  "state/README.md"
+  "$hot_state_branch_dir/README.md"
+  "$hot_state_task_dir/README.md"
+  "$hot_state_history_dir/README.md"
 )
 
 if (( root_shims_enabled == 1 )); then
@@ -113,31 +151,33 @@ if [[ "$workflow_profile" == "full" ]]; then
     "scripts/new-sprint.sh"
     "scripts/new-release.ps1"
     "scripts/new-release.sh"
+    "scripts/sync-external-items.ps1"
+    "scripts/sync-external-items.sh"
   )
+fi
+
+if [[ "$template_overlay" != "none" ]]; then
+  required_paths+=("templates/overlays/active/manifest.json")
 fi
 
 placeholder_patterns=(
   "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*current phase:[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*project state:[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*active task:[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*active task: \`tasks/active/TASK-XXX-sample\\.md\`[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*git branch and status:[[:space:]]*$"
+  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*active task: \`tasks/active/TASK-XXX.*\\.md\`[[:space:]]*$"
+  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*active branch hot state:[[:space:]]*$"
+  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*active task hot state:[[:space:]]*$"
+  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*latest verified summary:[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*\\[YYYY-MM-DD\\][[:space:]]*finding:[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*\\[YYYY-MM-DD\\][[:space:]]*conclusion:[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*Question:[[:space:]]*$"
+  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*branch-aware hot state checked:[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*integration status:[[:space:]]*$"
   "^[[:space:]]*Describe the product or system in one sentence\\.[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*What pain does this project solve\\?[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*Goal 1:[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*project state:[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*active task:[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*active task: \`tasks/active/TASK-XXX\\.md\`[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*Question:[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*integration status:[[:space:]]*$"
 )
 
 missing=()
 warnings=()
+contract_failures=()
 
 has_next_step_signal() {
   local progress_path="$root/docs/progress.md"
@@ -163,20 +203,58 @@ is_completed_task_file() {
   case "$path" in
     "$root"/tasks/history/*.md) return 0 ;;
   esac
-  grep -Eiq '^-[[:space:]]*(\[[ xX]\][[:space:]]*)?(status|commit status):[[:space:]]*(done|complete|committed|已完成|已提交)[[:space:]]*$|^-[[:space:]]*\[[xX]\][[:space:]]*(done|complete|committed|已完成|已提交)[[:space:]]*$|^-[[:space:]]*(\[[ xX]\][[:space:]]*)?(done|complete)[[:space:]]*$' "$path"
+  grep -Eiq '^-[[:space:]]*(\[[ xX]\][[:space:]]*)?(status|commit status|Git commit 状态)[:：][[:space:]]*(done|complete|committed|已完成|已提交)[[:space:]]*$|^-[[:space:]]*\[[xX]\][[:space:]]*(done|complete|committed|已完成|已提交)[[:space:]]*$|^-[[:space:]]*(\[[ xX]\][[:space:]]*)?(done|complete)[[:space:]]*$' "$path"
 }
 
 has_manual_git_closure() {
   local path="$1"
-  grep -Eiq 'commit status[:：][[:space:]]*(not committed|未提交)' "$path" &&
+  grep -Eiq 'commit status[:：][[:space:]]*(not committed|未提交)|Git commit 状态[:：][[:space:]]*(未提交)' "$path" &&
     grep -Eiq '(uncommitted reason|未提交原因)[:：][[:space:]]*[^[:space:]]' "$path" &&
     grep -Eiq '(recommended commit message|推荐 commit message)[:：][[:space:]]*[^[:space:]]' "$path"
 }
 
 has_auto_git_closure() {
   local path="$1"
-  grep -Eiq 'commit status[:：][[:space:]]*(committed|已提交)' "$path" &&
+  grep -Eiq 'commit status[:：][[:space:]]*(committed|已提交)|Git commit 状态[:：][[:space:]]*(已提交)' "$path" &&
     grep -Eiq '(commit hash|commit message|recommended commit message|推荐 commit message)[:：][[:space:]]*[^[:space:]]' "$path"
+}
+
+check_template_contract() {
+  local rel="$1"
+  local path="$root/$rel"
+  local markers=()
+  case "$lang:$rel" in
+    "en:templates/tasks/TASK-template.md")
+      markers=("## Status" "## Completion Handoff" "- [ ] commit status:" "- [ ] recommended next step:")
+      ;;
+    "en:templates/tasks/SUBTASK-template.md")
+      markers=("## Parent Task" "## Completion Handoff" "- [ ] commit status:" "- [ ] recommended next step:")
+      ;;
+    "en:templates/evidence/EVIDENCE-000-template.md")
+      markers=("## Goal" "## Results And Findings" "- [ ] expected result:" "- [ ] validation result: pass / fail / partial")
+      ;;
+    "en:templates/releases/RELEASE-template.md")
+      markers=("## Checks" "## Next Options" "- [ ] CI checks:" "- [ ] recommended next step:")
+      ;;
+    "zh-cn:templates/tasks/TASK-template.md")
+      markers=("## 状态" "## Completion Handoff" "- [ ] Git commit 状态：未提交 / 已提交" "- [ ] 推荐的下一步排期 (Next Task)：")
+      ;;
+    "zh-cn:templates/tasks/SUBTASK-template.md")
+      markers=("## Parent Task" "## Completion Handoff" "- [ ] commit status：未提交 / 已提交" "- [ ] 推荐下一步：")
+      ;;
+    "zh-cn:templates/evidence/EVIDENCE-000-template.md")
+      markers=("## 目标" "## 结果与发现" "- [ ] 预期结果应该是：" "- [ ] 验证结论：pass / fail / partial")
+      ;;
+    "zh-cn:templates/releases/RELEASE-template.md")
+      markers=("## Release Checks" "## 下一步选项" "- [ ] CI checks：" "- [ ] 推荐下一步：")
+      ;;
+  esac
+
+  for marker in "${markers[@]}"; do
+    if ! grep -Fq -- "$marker" "$path"; then
+      contract_failures+=("$rel is missing required parser-contract marker: $marker")
+    fi
+  done
 }
 
 for rel in "${required_paths[@]}"; do
@@ -207,6 +285,14 @@ for rel in "${docs_to_scan[@]}"; do
   done
 done
 
+for rel in "templates/tasks/TASK-template.md" "templates/tasks/SUBTASK-template.md" "templates/evidence/EVIDENCE-000-template.md"; do
+  [[ -f "$root/$rel" ]] || continue
+  check_template_contract "$rel"
+done
+if [[ "$workflow_profile" == "full" && -f "$root/templates/releases/RELEASE-template.md" ]]; then
+  check_template_contract "templates/releases/RELEASE-template.md"
+fi
+
 if ! compgen -G "$root/evidence/records/EVIDENCE-*.md" > /dev/null; then
   warnings+=("No evidence files found under evidence/records/")
 fi
@@ -214,12 +300,12 @@ fi
 task_count=0
 shopt -s nullglob
 for path in "$root"/tasks/active/TASK-*.md; do
-    task_count=$((task_count + 1))
-    if grep -Eiq '^-[[:space:]]*(\[[ xX]\][[:space:]]*)?decomposition decision:[[:space:]]*parallel_subtasks[[:space:]]*$|^-[[:space:]]*(\[[ xX]\][[:space:]]*)?parallelization candidate:[[:space:]]*yes[[:space:]]*$' "$path"; then
-      if ! grep -Eq 'tasks/(active/)?SUBTASK-[0-9]{3}.*\.md' "$path"; then
-        warnings+=("$(basename "$path") is marked for parallel work but does not link any subtasks")
-      fi
+  task_count=$((task_count + 1))
+  if grep -Eiq '^-[[:space:]]*(\[[ xX]\][[:space:]]*)?decomposition decision:[[:space:]]*parallel_subtasks[[:space:]]*$|^-[[:space:]]*(\[[ xX]\][[:space:]]*)?parallelization candidate:[[:space:]]*yes[[:space:]]*$|^-[[:space:]]*(\[[ xX]\][[:space:]]*)?拆分决策[:：][[:space:]]*parallel_subtasks[[:space:]]*$' "$path"; then
+    if ! grep -Eq 'tasks/(active/)?SUBTASK-[0-9]{3}.*\.md' "$path"; then
+      warnings+=("$(basename "$path") is marked for parallel work but does not link any subtasks")
     fi
+  fi
 done
 if (( task_count == 0 )); then
   warnings+=("No concrete task cards found under tasks/active/")
@@ -228,6 +314,21 @@ fi
 case "$task_completion_git_mode" in
   manual|auto) ;;
   *) warnings+=("workflow-config.env has unknown TASK_COMPLETION_GIT_MODE=$task_completion_git_mode; use manual or auto") ;;
+esac
+
+case "$hot_state_mode" in
+  branch-aware|task-aware) ;;
+  *) warnings+=("workflow-config.env has unknown HOT_STATE_MODE=$hot_state_mode; use branch-aware or task-aware") ;;
+esac
+
+case "$external_issue_source" in
+  none|github|jira|linear) ;;
+  *) warnings+=("workflow-config.env has unknown EXTERNAL_ISSUE_SOURCE=$external_issue_source; use none, github, jira, or linear") ;;
+esac
+
+case "$connector_mode" in
+  pull-only) ;;
+  *) warnings+=("workflow-config.env has unknown CONNECTOR_MODE=$connector_mode; use pull-only") ;;
 esac
 
 for path in "$root"/tasks/active/TASK-*.md "$root"/tasks/active/SUBTASK-*.md "$root"/tasks/history/*.md; do
@@ -249,6 +350,13 @@ if ! has_next_step_signal; then
   warnings+=("docs/progress.md does not contain a concrete next-step signal; before archiving work, add a recommended next step, a full-profile backlog item, a waiting user decision, or a terminal reason")
 fi
 
+if (( ${#contract_failures[@]} > 0 )); then
+  printf '\nContract Failures:\n'
+  for failure in "${contract_failures[@]}"; do
+    printf '[FAIL] %s\n' "$failure"
+  done
+fi
+
 if (( ${#warnings[@]} > 0 )); then
   printf '\nWarnings:\n'
   for warning in "${warnings[@]}"; do
@@ -257,12 +365,12 @@ if (( ${#warnings[@]} > 0 )); then
 fi
 
 printf '\n'
-if (( ${#missing[@]} == 0 )); then
+if (( ${#missing[@]} == 0 && ${#contract_failures[@]} == 0 )); then
   printf 'Result: PASS\n'
 else
   printf 'Result: FAIL\n'
 fi
 
-if (( strict == 1 && ${#missing[@]} > 0 )); then
+if (( strict == 1 && (${#missing[@]} > 0 || ${#contract_failures[@]} > 0) )); then
   exit 1
 fi

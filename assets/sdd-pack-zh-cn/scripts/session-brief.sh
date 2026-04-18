@@ -9,9 +9,14 @@ progress_path="$root/docs/progress.md"
 process_path="$root/docs/process.md"
 active_tasks_dir="$root/tasks/active"
 history_tasks_dir="$root/tasks/history"
-git_root="$(git -C "$repo_root" rev-parse --show-toplevel 2>/dev/null || true)"
 workflow_profile="lite"
 task_completion_git_mode="manual"
+hot_state_mode="branch-aware"
+hot_state_branch_dir="state/hot/branches"
+hot_state_task_dir="state/hot/tasks"
+external_issue_source="none"
+connector_mode="pull-only"
+
 if [[ -f "$root/workflow-config.env" ]]; then
   while IFS='=' read -r key value; do
     value="${value%$'\r'}"
@@ -21,6 +26,21 @@ if [[ -f "$root/workflow-config.env" ]]; then
         ;;
       TASK_COMPLETION_GIT_MODE)
         task_completion_git_mode="$value"
+        ;;
+      HOT_STATE_MODE)
+        hot_state_mode="$value"
+        ;;
+      HOT_STATE_BRANCH_DIR)
+        hot_state_branch_dir="$value"
+        ;;
+      HOT_STATE_TASK_DIR)
+        hot_state_task_dir="$value"
+        ;;
+      EXTERNAL_ISSUE_SOURCE)
+        external_issue_source="$value"
+        ;;
+      CONNECTOR_MODE)
+        connector_mode="$value"
         ;;
     esac
   done < "$root/workflow-config.env"
@@ -35,8 +55,32 @@ section() {
   ' "$2"
 }
 
+sanitize_hot_state_name() {
+  printf '%s' "$1" | sed -E 's#/#__#g; s#[^A-Za-z0-9._-]+#-#g; s#-+#-#g; s#^-+##; s#-+$##'
+}
+
+extract_current_task_ref() {
+  [[ -f "$progress_path" ]] || return 0
+  local current_body
+  current_body="$(section "Current" "$progress_path")"
+  printf '%s\n' "$current_body" | sed -nE 's/^[[:space:]]*-[[:space:]]*\[[ xX]\][[:space:]]*(active task|当前 Active Task)[:：][[:space:]]*`?([^`]+)`?.*$/\2/p' | head -n 1
+}
+
+print_markdown_file_as_section() {
+  local heading="$1"
+  local path="$2"
+  local empty_message="$3"
+  printf '## %s\n' "$heading"
+  if [[ -f "$path" ]]; then
+    cat "$path"
+  else
+    printf -- '- %s\n' "$empty_message"
+  fi
+  printf '\n'
+}
+
 timestamp="$(date '+%Y-%m-%d %H:%M:%S %z')"
-if [[ -n "$git_root" ]]; then
+if git_root="$(git -C "$repo_root" rev-parse --show-toplevel 2>/dev/null)"; then
   branch="$(git -C "$git_root" symbolic-ref --quiet --short HEAD 2>/dev/null || printf 'unborn-or-detached')"
   if [[ "$repo_root" == "$git_root" ]]; then
     git_scope="."
@@ -47,19 +91,41 @@ if [[ -n "$git_root" ]]; then
   fi
   git_status="$(git -C "$git_root" status --short -- "$git_scope" 2>/dev/null || true)"
 else
+  git_root=""
   branch="unknown"
   git_scope="."
   git_status=""
 fi
 
-printf '# 会话摘要\n\n'
-printf -- '- 仓库根目录: %s\n' "$repo_root"
-printf -- '- workflow 根目录: %s\n' "$root"
+branch_hot_state_path=""
+if [[ -n "$branch" && "$branch" != "unknown" && "$branch" != "unborn-or-detached" ]]; then
+  safe_branch_name="$(sanitize_hot_state_name "$branch")"
+  branch_hot_state_path="$root/$hot_state_branch_dir/$safe_branch_name.md"
+fi
+
+current_task_ref="$(extract_current_task_ref)"
+task_hot_state_path=""
+if [[ -n "$current_task_ref" && "$current_task_ref" != "none" && "$current_task_ref" != *"TASK-XXX"* ]]; then
+  task_hot_state_path="$root/$hot_state_task_dir/$(basename "$current_task_ref")"
+fi
+
+legacy_git_handoff_heading="Git "
+legacy_git_handoff_heading+="收"
+legacy_git_handoff_heading+="口"
+legacy_blockers_heading="阻碍与风"  # placeholder joined below
+legacy_blockers_heading+="险"
+
+printf '# Session Brief\n\n'
+printf -- '- repo root: %s\n' "$repo_root"
+printf -- '- workflow root: %s\n' "$root"
 printf -- '- workflow profile: %s\n' "$workflow_profile"
 printf -- '- task completion git mode: %s\n' "$task_completion_git_mode"
-printf -- '- 时间戳: %s\n' "$timestamp"
-printf -- '- 当前分支: %s\n' "$branch"
-printf -- '- git 范围: %s\n\n' "$git_scope"
+printf -- '- hot state mode: %s\n' "$hot_state_mode"
+printf -- '- external issue source: %s\n' "$external_issue_source"
+printf -- '- connector mode: %s\n' "$connector_mode"
+printf -- '- timestamp: %s\n' "$timestamp"
+printf -- '- branch: %s\n' "$branch"
+printf -- '- git scope: %s\n\n' "$git_scope"
 
 for heading in "Macro Focus" "Rules of Archiving" "Recent History" "Pointers" "Current Focus" "近期归档" "Workflow Rules & Index" "当前焦点" "当前任务板" "近期完成" "归档规则"; do
   if [[ -f "$process_path" ]]; then
@@ -70,8 +136,6 @@ for heading in "Macro Focus" "Rules of Archiving" "Recent History" "Pointers" "C
   fi
 done
 
-legacy_git_handoff_heading="Git 收""口"
-legacy_blockers_heading="阻塞""项"
 for heading in "Current" "Recent Findings" "Session Handoff" "Concurrency" "当前上下文" "协作区" "当前摘要" "当前" "Git handoff" "$legacy_git_handoff_heading" "下一步选项" "下一步" "并行工作摘要" "Blockers" "$legacy_blockers_heading"; do
   if [[ -f "$progress_path" ]]; then
     body="$(section "$heading" "$progress_path")"
@@ -81,25 +145,32 @@ for heading in "Current" "Recent Findings" "Session Handoff" "Concurrency" "当�
   fi
 done
 
-printf '## Git 状态\n'
+if [[ -n "$branch_hot_state_path" ]]; then
+  print_markdown_file_as_section "Active Branch Hot State" "$branch_hot_state_path" "当前 branch 还没有热状态便签"
+fi
+
+if [[ -n "$task_hot_state_path" ]]; then
+  print_markdown_file_as_section "Active Task Hot State" "$task_hot_state_path" "当前 active task 还没有热状态便签"
+fi
+
+printf '## Git Status\n'
 if [[ -n "$git_status" ]]; then
   while IFS= read -r line; do
     printf -- '- %s\n' "$line"
   done <<< "$git_status"
 else
-  printf -- '- 工作区干净或 git 不可用\n'
+  printf -- '- clean or unavailable\n'
 fi
 printf '\n'
 
-printf '## 最近的 Task Cards\n'
+printf '## Recent Task Cards\n'
 recent=0
 shopt -s nullglob
 task_paths=("$active_tasks_dir"/TASK-*.md)
 if (( ${#task_paths[@]} > 0 )); then
   mapfile -t task_paths < <(ls -1t "${task_paths[@]}")
   for path in "${task_paths[@]}"; do
-    name="$(basename "$path")"
-    printf -- '- %s\n' "$name"
+    printf -- '- %s\n' "$(basename "$path")"
     recent=$((recent + 1))
     if (( recent == 5 )); then
       break
@@ -108,17 +179,16 @@ if (( ${#task_paths[@]} > 0 )); then
 fi
 
 if (( recent == 0 )); then
-  printf -- '- 还没有真实 task\n'
+  printf -- '- no concrete task cards yet\n'
 fi
 
-printf '\n## 最近的 Subtasks\n'
+printf '\n## Recent Subtasks\n'
 recent=0
 subtask_paths=("$active_tasks_dir"/SUBTASK-*.md)
 if (( ${#subtask_paths[@]} > 0 )); then
   mapfile -t subtask_paths < <(ls -1t "${subtask_paths[@]}")
   for path in "${subtask_paths[@]}"; do
-    name="$(basename "$path")"
-    printf -- '- %s\n' "$name"
+    printf -- '- %s\n' "$(basename "$path")"
     recent=$((recent + 1))
     if (( recent == 5 )); then
       break
@@ -127,10 +197,10 @@ if (( ${#subtask_paths[@]} > 0 )); then
 fi
 
 if (( recent == 0 )); then
-  printf -- '- 还没有真实 subtask\n'
+  printf -- '- no concrete subtasks yet\n'
 fi
 
-printf '\n## 最近归档的任务\n'
+printf '\n## Recently Archived\n'
 recent=0
 history_paths=("$history_tasks_dir"/*.md)
 if (( ${#history_paths[@]} > 0 )); then
@@ -145,5 +215,5 @@ if (( ${#history_paths[@]} > 0 )); then
 fi
 
 if (( recent == 0 )); then
-  printf -- '- 还没有归档任务\n'
+  printf -- '- no archived work yet\n'
 fi

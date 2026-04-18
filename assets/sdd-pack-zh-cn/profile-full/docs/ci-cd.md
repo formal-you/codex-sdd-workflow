@@ -13,6 +13,7 @@
 - 自动化说明放在 `../automation/`
 - GitHub Actions 示例放在 `../automation/github-actions/ci.yml.example`
 - release 卡片应明确链接需要通过的检查
+- connector hook 可以引入外部 issue 上下文，但流水线 ownership 仍然归团队现有系统
 
 ## 合并前
 
@@ -25,3 +26,9 @@
 1. release 检查单是最新的
 2. 回滚负责人和回滚命令是明确的
 3. 如果变更影响用户，evidence 已经补齐
+
+## External Source Boundary
+
+- 使用 `../workflow-config.env` 中的 `EXTERNAL_ISSUE_SOURCE` 与 `CONNECTOR_MODE` 标记当前 repo 是否正在镜像外部规划系统
+- 默认 connector 行为是 `pull-only`
+- 一旦团队已经有正式交付平台，不要把 repo-local 的 backlog 或 release 记录误当成唯一真源

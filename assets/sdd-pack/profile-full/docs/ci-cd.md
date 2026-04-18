@@ -13,6 +13,7 @@ Use this file when the workflow runs in the `full` profile.
 - automation notes live under `../automation/`
 - the starter GitHub Actions example lives at `../automation/github-actions/ci.yml.example`
 - release plans should point at the checks that must pass
+- connector hooks may import external issue context, but pipeline ownership still lives in the team system
 
 ## Before Merge
 
@@ -25,3 +26,9 @@ Use this file when the workflow runs in the `full` profile.
 1. release checklist is current
 2. rollback owner and rollback command are known
 3. evidence links are attached when the deployment changes user-facing behavior
+
+## External Source Boundary
+
+- use `EXTERNAL_ISSUE_SOURCE` and `CONNECTOR_MODE` from `../workflow-config.env` to document whether this repo mirrors external planning state
+- default connector behavior is `pull-only`
+- do not treat repo-local release or backlog notes as the only source of truth once a team-managed delivery platform exists

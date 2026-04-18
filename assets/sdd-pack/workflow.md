@@ -24,6 +24,8 @@ The repository-level operating contract lives in the root [`AGENTS.md`](../AGENT
   - durable project memory, process summary, testing guidance, git workflow, and audit notes
 - `tasks/`
   - `active/` stores live tasks and subtasks, `history/` stores archived work
+- `state/`
+  - `hot/` stores branch-aware or task-aware scratch notes, `history/` stores retired hot-state notes
 - `templates/`
   - the workflow template library; templates are physically separated from real artifacts
 - `adr/`
@@ -61,12 +63,13 @@ The repository-level operating contract lives in the root [`AGENTS.md`](../AGENT
 ## Progress And Archiving
 
 - `docs/process.md` is the long-lived process view for milestones, archiving rules, recent history, and key pointers
-- `docs/progress.md` is the short-lived recovery note for current work, recent findings, and session handoff
+- `docs/progress.md` is the aggregate hot-state summary for current work, recent findings, and shared session handoff
+- detailed branch or task scratch notes belong in `state/hot/`
 - use `[ ]` for unfinished, pending, or unconfirmed items and `[x]` for completed or confirmed items in workflow status docs
 - when a task or subtask is done and no longer active, move it from `tasks/active/` into `tasks/history/`
 - before archiving, leave one next-step entry: a `recommended next step` entry in `docs/progress.md`, or a backlog item in the full profile
 - if no recommendation is possible, record the waiting user decision or terminal reason in `docs/progress.md`
-- after archiving, refresh the short archive notes in `docs/process.md`
+- after archiving, refresh the short archive notes in `docs/process.md` and retire any task-local hot-state note that is no longer needed
 
 ## Git Workflow
 

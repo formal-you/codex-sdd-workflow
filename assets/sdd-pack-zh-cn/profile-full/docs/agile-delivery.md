@@ -25,3 +25,9 @@
 - carry-over 项
 - 发布窗口或上线节奏
 - 会阻塞交付的 CI/CD 风险
+
+## External Source Boundary
+
+- repo-local 的 backlog、sprint、release 卡片是执行 scaffolding，不是团队唯一真源
+- 如果团队已经在用 GitHub Issues、Jira 或 Linear，请把这里当成执行镜像与 handoff 载体
+- connector hook 应优先 pull 外部上下文，不应静默回写第三方系统

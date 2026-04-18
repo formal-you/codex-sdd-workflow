@@ -22,11 +22,13 @@
 | **Agent 工作契约** | 自动生成根目录 `AGENTS.md` 和 `README.md` shim | 明确 Codex 的启动顺序和行为边界 |
 | **Agent 底层工具链**| 提供 `SDD/scripts/` 中稳定确定的操作脚本作为 API | 让 AI 代替人类执行管理动作，杜绝 AI 随意修改排版报错，建立强护栏 |
 | **结构化任务图** | Parent task → Subtask 的分层任务系统，含验收标准、验证命令、scope 界定 | 复杂工程不会变成"一锅粥"，每步可追踪、可验证 |
-| **Session 生存 & 交接** | `session-brief` 脚本 + `handoff` 模板 + `progress.md` 持久状态 | 断连不丢活，换人不丢线——跨 session 无缝恢复 |
+| **Session 生存 & 交接** | `session-brief` 脚本 + `handoff` 模板 + `progress.md` 聚合状态 + `state/hot/` 局部便签 | 断连不丢活，换人不丢线——跨 session 无缝恢复 |
+| **热状态收敛** | 引入 `SDD/state/`，把 branch/task 级高频便签从共享 `progress.md` 中拆开 | 降低多人或多分支协作时的共享写入热点 |
 | **验证 & 审计链** | 内置 `validate-sdd`、evidence 模板、workflow audit 模板 | 确保流程"真的被执行了"，而非停留在纸面 |
 | **下一步指引** | 任务结束前必须留下 next-step 记录 | 每个 session 结束都指向"接下来该做什么"，不会断档 |
 | **Git 完成闭环** | 按 `TASK_COMPLETION_GIT_MODE` 管理 commit 状态和推荐 message | 不会静默 commit，也不会忘记记录"为什么没提交" |
 | **双 Profile 灵活选择** | `lite` 精准开发 / `full` 敏捷交付 scaffolding | 按需选择，从轻量协作到完整 sprint 管理一步切换 |
+| **连接器预留层** | `full` 预留 external issue source 与 pull-only connector hook | 能接第三方规划系统，但不把 repo-local 文本误当唯一真源 |
 | **跨平台支持** | Shell (Linux/macOS/WSL) 为主，PowerShell 完整支持 | Windows、Mac、Linux 团队无缝协作 |
 
 ---
@@ -139,9 +141,15 @@ your-repo/
     ├── templates/                   # 📄 模板库（与真实文件物理分离）
     │   ├── tasks/                   #     任务卡片模板
     │   ├── evidence/                #     验证留痕模板（记录测了什么、结果如何）
-    │   └── adr/                     #     架构决策记录模板
+    │   ├── adr/                     #     架构决策记录模板
+    │   └── overlays/                #     受控模板 overlay 记录
     ├── adr/records/                 # 🏛️ 架构决策记录（ADR）
     ├── evidence/records/            # 🔍 实际的验证记录存档（由模板生成）
+    ├── state/                       # 🔥 branch/task 级热状态便签
+    │   ├── hot/                     #     当前高频更新的局部状态，不是 task card
+    │   │   ├── branches/            #     branch-local 便签
+    │   │   └── tasks/               #     task-local 便签
+    │   └── history/                 #     归档后仍值得保留的热状态记录
     └── scripts/                     # 🛠️ 日常工作脚本
         ├── session-brief.sh / .ps1  #     Session 恢复摘要
         ├── validate-sdd.sh / .ps1   #     Workflow 合规检查
@@ -154,11 +162,13 @@ your-repo/
 
 > **📎 关键文件联动关系**
 >
-> **任务生命周期链**：`tasks/active/` 中创建任务 → 开发完成 → 归档到 `tasks/history/` → 同步更新 `docs/process.md`（长期流程摘要）和 `docs/progress.md`（当前进度快照）
+> **任务生命周期链**：`tasks/active/` 中创建任务 → 分支或 task 级细节写入 `state/hot/` → 开发完成 → 归档到 `tasks/history/` → 同步更新 `docs/process.md`（长期流程摘要）和 `docs/progress.md`（共享恢复摘要）
 >
 > **验证留痕链**：参考 `docs/testing.md` 的命令和门禁 → 执行验证 → 基于 `templates/evidence/` 模板填写记录 → 保存到 `evidence/records/` → `validate-sdd --strict` 自动检查是否有留痕
 >
-> 简单来说：`process.md` 是项目的"长期记忆"，`progress.md` 是当前迭代的"工作台"，`tasks/` 是具体的"待办清单"——三者共同构成 Codex 每次恢复上下文的信息来源。
+> 简单来说：`process.md` 是项目的"长期记忆"，`progress.md` 是共享恢复摘要，`tasks/` 是正式 task card，`state/hot/` 是 branch/task 级临时便签——四者共同构成 Codex 每次恢复上下文的信息来源。
+>
+> **注意**：`tasks/active/` 里的 `TASK-*.md` / `SUBTASK-*.md` 是正式任务卡，包含目标、scope、验收标准和 Completion Handoff；`state/hot/tasks/` 只是跟 task 同名的短期实现便签，用来记录高频细节，不能替代 task card。
 
 使用 **full profile** 时，还会额外生成：
 
@@ -168,10 +178,19 @@ SDD/
 ├── sprints/                         # 🏃 Sprint 记录
 ├── releases/                        # 📦 Release 追踪
 ├── automation/                      # 🔄 CI/CD 自动化配置
+├── scripts/
+│   └── sync-external-items.sh/.ps1   #     外部 issue source 的 pull-only connector hook
 └── docs/
     ├── agile-delivery.md            #     敏捷交付流程说明
     └── ci-cd.md                     #     CI/CD 集成指南
 ```
+
+`full` 还会在 `workflow-config.env` 里预留：
+
+- `EXTERNAL_ISSUE_SOURCE=none`
+- `CONNECTOR_MODE=pull-only`
+
+它们用来表达一个很重要的边界：`full` 是 repo-local 的执行与交付 scaffolding，不是完整的外部系统同步平台。
 
 ---
 
@@ -203,6 +222,7 @@ SDD/
 
 - Codex 会在开发过程中根据它的判断调用 `new-subtask.sh` 并行推进。
 - 如果一个任务自然拆成多个独立可验证的工作单元，Codex 会自主完成架构拆解与追踪。
+- 需要记录大量 branch/task 级细节时，Codex 会优先写入 `SDD/state/hot/`，而不是把 `progress.md` 写成共享冲突热点。
 
 ### 4️⃣ 完成任务——检查、验收与归档
 
@@ -227,6 +247,7 @@ SDD/
 |:---|:---|
 | 了解项目背景和目标 | `SDD/docs/project-brief.md` |
 | 查看当前焦点和进度 | `SDD/docs/process.md` + `progress.md` |
+| 查看 branch/task 级临时细节 | `SDD/state/hot/branches/` + `SDD/state/hot/tasks/` |
 | 查阅架构决策 | `SDD/adr/records/` |
 | 查找历史任务和经验 | `SDD/tasks/history/` |
 | 查看验证证据 | `SDD/evidence/records/` |
@@ -247,8 +268,9 @@ SDD/
 
 - ✅ 用 `[ ]` 标记未完成项，`[x]` 标记已完成项——Codex 和脚本都依赖这个约定
 - 📂 活跃任务放 `tasks/active/`，完成后及时归档到 `tasks/history/`，保持工作区整洁
+- 🔥 高频实现便签放 `state/hot/`，共享恢复摘要才写入 `docs/progress.md`
 - 🚫 **不要手动修改 `templates/` 目录中的模板**——它们是生成新卡片的源，修改会影响后续创建
-- 🔄 `process.md` 是长期维护的流程摘要，`progress.md` 是当前迭代的进度快照——不要混淆
+- 🔄 `process.md` 是长期维护的流程摘要，`progress.md` 是共享恢复摘要，`state/hot/` 是局部便签——不要混淆
 
 ### Git 相关
 
@@ -262,6 +284,14 @@ SDD/
 - 每个 subtask 有明确的 scope 边界，文件所有权保持不相交
 - 主 agent 负责集成和最终验证，subtask 只报告变更和风险
 - 任务卡片和交接文档是协作的通信契约——**请认真填写**
+- 多分支或多人并行时，优先把细节写到 branch/task 级 hot state，降低 `progress.md` 的 merge 冲突概率
+
+### 模板 Overlay
+
+- 默认不需要 overlay，内置模板已经覆盖大多数场景
+- 如需组织级定制，可使用 `--template-overlay /path/to/overlay`
+- overlay 只能覆盖受支持模板，并且必须保留 parser contract 所需标题、checkbox 字段和 handoff 字段
+- 合法 overlay 会在 `SDD/templates/overlays/active/manifest.json` 中留下记录
 
 ---
 

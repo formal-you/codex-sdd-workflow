@@ -94,10 +94,33 @@ For each case, check:
 4. did it guide the user into generated workflow entrypoints
 5. did it avoid unsafe upgrade advice
 
+## Case 4: Hot State And Connector Boundaries
+
+### Prompt
+
+```text
+Use $codex-sdd-workflow at /path/to/codex-sdd-workflow to help with this request: My repo will have several active branches and I do not want every session to keep rewriting one shared progress file. I also already use GitHub Issues, so if I choose the full profile I only want repo-local execution scaffolding, not a second source of truth. Tell me how the generated workflow should be structured.
+```
+
+### Expected Behaviors
+
+- explains that `progress.md` should stay as the shared aggregate recovery note
+- routes detailed branch-local or task-local scratch state into `SDD/state/hot/`
+- describes `full` as repo-local agile delivery scaffolding rather than the only planning source
+- mentions connector-first, pull-only intent when external issue systems already exist
+- avoids promising a complete bidirectional GitHub/Jira/Linear synchronizer
+
+### Failure Signals
+
+- keeps recommending one shared `progress.md` for all detailed scratch notes
+- frames `full` backlog or sprint files as the only source of truth when external systems exist
+- claims the workflow already performs full external synchronization
+
 ## Current Baseline
 
-These three cases were forward-tested after the current skill-structure refactor and produced the expected high-level outcomes:
+These cases were forward-tested after the current skill-structure refactor and produced the expected high-level outcomes:
 
 - bootstrap case: asked for or defaulted `lite/full`, then routed to repo-local entrypoints
 - upgrade case: preferred preview and avoided replacing root files by default
 - profile-choice case: defaulted toward `lite` and explained `full` as scaffolding, not a full platform
+- hot-state or connector-boundary case: kept `progress.md` aggregate, routed detailed state into `SDD/state/hot/`, and described external issue integration as connector-first and pull-only

@@ -3,13 +3,29 @@
 set -euo pipefail
 
 usage() {
-  echo "用法: $0 \"tasks/active/TASK-001-sample.md\" [--root /path/to/SDD] [--dry-run]"
+  echo "Usage: $0 \"tasks/active/TASK-001-sample.md\" [--root /path/to/SDD] [--dry-run]"
 }
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 root="$(cd "$script_dir/.." && pwd)"
 dry_run=0
 task_path=""
+hot_state_task_dir="state/hot/tasks"
+hot_state_history_dir="state/history"
+
+if [[ -f "$root/workflow-config.env" ]]; then
+  while IFS='=' read -r key value; do
+    value="${value%$'\r'}"
+    case "$key" in
+      HOT_STATE_TASK_DIR)
+        hot_state_task_dir="$value"
+        ;;
+      HOT_STATE_HISTORY_DIR)
+        hot_state_history_dir="$value"
+        ;;
+    esac
+  done < "$root/workflow-config.env"
+fi
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -54,19 +70,32 @@ fi
 case "$source_path" in
   "$active_dir"/*) ;;
   *)
-    echo "只能归档 tasks/active/ 下的任务: $source_path" >&2
+    echo "Only tasks under tasks/active/ can be archived: $source_path" >&2
     exit 1
     ;;
 esac
 
 destination_path="$history_dir/$(basename "$source_path")"
+task_hot_state_source="$root/$hot_state_task_dir/$(basename "$source_path")"
+task_hot_state_destination="$root/$hot_state_history_dir/tasks/$(basename "$source_path")"
 
 if [[ "$dry_run" -eq 1 ]]; then
-  echo "[DRY RUN] 将归档 $source_path -> $destination_path"
+  echo "[DRY RUN] Would archive $source_path -> $destination_path"
+  if [[ -f "$task_hot_state_source" ]]; then
+    echo "[DRY RUN] Would retire task hot state $task_hot_state_source -> $task_hot_state_destination"
+  fi
   exit 0
 fi
 
 mv "$source_path" "$destination_path"
-echo "已归档 $destination_path"
-echo "请同步更新 docs/process.md 与 docs/progress.md"
+echo "Archived $destination_path"
+
+if [[ -f "$task_hot_state_source" ]]; then
+  mkdir -p "$(dirname "$task_hot_state_destination")"
+  mv "$task_hot_state_source" "$task_hot_state_destination"
+  echo "Retired task hot state $task_hot_state_destination"
+fi
+
+echo "记得同步更新 docs/process.md 与 docs/progress.md"
+echo "progress.md 只保留共享聚合摘要；branch/task 级细节便签请放在 state/hot/。"
 echo "进入下一次会话前，请留下下一步入口：新的 active task、progress.md 的推荐下一步，或 full profile 下的 backlog 条目。"

@@ -11,7 +11,15 @@ if ([string]::IsNullOrWhiteSpace($Root)) {
 $configPath = Join-Path $Root "workflow-config.env"
 $rootShimsEnabled = $true
 $workflowProfile = "lite"
+$lang = "en"
 $taskCompletionGitMode = "manual"
+$hotStateMode = "branch-aware"
+$hotStateBranchDir = "state/hot/branches"
+$hotStateTaskDir = "state/hot/tasks"
+$hotStateHistoryDir = "state/history"
+$externalIssueSource = "none"
+$connectorMode = "pull-only"
+$templateOverlay = "none"
 if (Test-Path -LiteralPath $configPath) {
     foreach ($line in Get-Content -LiteralPath $configPath) {
         if ($line -match "^\s*ROOT_SHIMS=(.+?)\s*$") {
@@ -20,8 +28,32 @@ if (Test-Path -LiteralPath $configPath) {
         if ($line -match "^\s*WORKFLOW_PROFILE=(.+?)\s*$") {
             $workflowProfile = $matches[1].Trim()
         }
+        if ($line -match "^\s*LANG=(.+?)\s*$") {
+            $lang = $matches[1].Trim()
+        }
         if ($line -match "^\s*TASK_COMPLETION_GIT_MODE=(.+?)\s*$") {
             $taskCompletionGitMode = $matches[1].Trim()
+        }
+        if ($line -match "^\s*HOT_STATE_MODE=(.+?)\s*$") {
+            $hotStateMode = $matches[1].Trim()
+        }
+        if ($line -match "^\s*HOT_STATE_BRANCH_DIR=(.+?)\s*$") {
+            $hotStateBranchDir = $matches[1].Trim()
+        }
+        if ($line -match "^\s*HOT_STATE_TASK_DIR=(.+?)\s*$") {
+            $hotStateTaskDir = $matches[1].Trim()
+        }
+        if ($line -match "^\s*HOT_STATE_HISTORY_DIR=(.+?)\s*$") {
+            $hotStateHistoryDir = $matches[1].Trim()
+        }
+        if ($line -match "^\s*EXTERNAL_ISSUE_SOURCE=(.+?)\s*$") {
+            $externalIssueSource = $matches[1].Trim()
+        }
+        if ($line -match "^\s*CONNECTOR_MODE=(.+?)\s*$") {
+            $connectorMode = $matches[1].Trim()
+        }
+        if ($line -match "^\s*TEMPLATE_OVERLAY=(.+?)\s*$") {
+            $templateOverlay = $matches[1].Trim()
         }
     }
 }
@@ -40,6 +72,7 @@ $requiredPaths = @(
     "tasks\active",
     "tasks\history",
     "templates\README.md",
+    "templates\overlays\README.md",
     "templates\tasks\TASK-template.md",
     "templates\tasks\SUBTASK-template.md",
     "templates\adr\ADR-000-template.md",
@@ -60,7 +93,11 @@ $requiredPaths = @(
     "scripts\validate-sdd.sh",
     "scripts\handoff-template.ps1",
     "scripts\handoff-template.sh",
-    "evidence\README.md"
+    "evidence\README.md",
+    "state\README.md",
+    ($hotStateBranchDir -replace "/", "\") + "\README.md",
+    ($hotStateTaskDir -replace "/", "\") + "\README.md",
+    ($hotStateHistoryDir -replace "/", "\") + "\README.md"
 )
 
 if ($rootShimsEnabled) {
@@ -88,32 +125,34 @@ if ($workflowProfile -eq "full") {
         "scripts\new-sprint.ps1",
         "scripts\new-sprint.sh",
         "scripts\new-release.ps1",
-        "scripts\new-release.sh"
+        "scripts\new-release.sh",
+        "scripts\sync-external-items.ps1",
+        "scripts\sync-external-items.sh"
     )
+}
+
+if ($templateOverlay -ne "none") {
+    $requiredPaths += "templates\overlays\active\manifest.json"
 }
 
 $placeholderPatterns = @(
     "^\s*-\s*\[\s\]\s*current phase:\s*$",
-    "^\s*-\s*\[\s\]\s*project state:\s*$",
     "^\s*-\s*\[\s\]\s*active task:\s*$",
-    "^\s*-\s*\[\s\]\s*active task: `tasks/active/TASK-XXX-sample\.md`\s*$",
-    "^\s*-\s*\[\s\]\s*git branch and status:\s*$",
+    "^\s*-\s*\[\s\]\s*active task: `tasks/active/TASK-XXX.*\.md`\s*$",
+    "^\s*-\s*\[\s\]\s*active branch hot state:\s*$",
+    "^\s*-\s*\[\s\]\s*active task hot state:\s*$",
+    "^\s*-\s*\[\s\]\s*latest verified summary:\s*$",
     "^\s*-\s*\[\s\]\s*\[YYYY-MM-DD\]\s*finding:\s*$",
     "^\s*-\s*\[\s\]\s*\[YYYY-MM-DD\]\s*conclusion:\s*$",
-    "^\s*-\s*\[\s\]\s*Question:\s*$",
+    "^\s*-\s*\[\s\]\s*branch-aware hot state checked:\s*$",
     "^\s*-\s*\[\s\]\s*integration status:\s*$",
     "^\s*Describe the product or system in one sentence\.\s*$",
-    "^\s*-\s*What pain does this project solve\?\s*$",
-    "^\s*-\s*Goal 1:\s*$",
-    "^\s*-\s*project state:\s*$",
-    "^\s*-\s*active task:\s*$",
-    "^\s*-\s*active task: `tasks/active/TASK-XXX\.md`\s*$",
-    "^\s*-\s*Question:\s*$",
-    "^\s*-\s*integration status:\s*$"
+    "^\s*-\s*What pain does this project solve\?\s*$"
 )
 
 $missing = New-Object System.Collections.Generic.List[string]
 $warnings = New-Object System.Collections.Generic.List[string]
+$contractFailures = New-Object System.Collections.Generic.List[string]
 
 function Test-NextStepSignal {
     param([string]$RootPath)
@@ -146,7 +185,7 @@ function Test-CompletedTaskFile {
     }
 
     $raw = Get-Content -LiteralPath $Path.FullName -Raw
-    return ($raw -match "(?im)^-\s*(?:\[[ xX]\]\s*)?(status|commit status):\s*(done|complete|committed|已完成|已提交)\s*$") -or
+    return ($raw -match "(?im)^-\s*(?:\[[ xX]\]\s*)?(status|commit status|Git commit 状态)[:：]\s*(done|complete|committed|已完成|已提交)\s*$") -or
         ($raw -match "(?im)^-\s*\[[xX]\]\s*(done|complete|committed|已完成|已提交)\s*$") -or
         ($raw -match "(?im)^-\s*(?:\[[ xX]\]\s*)?(done|complete)\s*$")
 }
@@ -154,7 +193,8 @@ function Test-CompletedTaskFile {
 function Test-ManualGitClosure {
     param([string]$Raw)
 
-    return ($Raw -match "(?im)commit status[:：]\s*(not committed|未提交)") -and
+    return (($Raw -match "(?im)commit status[:：]\s*(not committed|未提交)") -or
+        ($Raw -match "(?im)Git commit 状态[:：]\s*未提交")) -and
         ($Raw -match "(?im)(uncommitted reason|未提交原因)[:：]\s*\S") -and
         ($Raw -match "(?im)(recommended commit message|推荐 commit message)[:：]\s*\S")
 }
@@ -162,8 +202,54 @@ function Test-ManualGitClosure {
 function Test-AutoGitClosure {
     param([string]$Raw)
 
-    return ($Raw -match "(?im)commit status[:：]\s*(committed|已提交)") -and
+    return (($Raw -match "(?im)commit status[:：]\s*(committed|已提交)") -or
+        ($Raw -match "(?im)Git commit 状态[:：]\s*已提交")) -and
         ($Raw -match "(?im)(commit hash|commit message|recommended commit message|推荐 commit message)[:：]\s*\S")
+}
+
+function Test-TemplateContract {
+    param([string]$RelativePath)
+
+    $absolutePath = Join-Path $Root $RelativePath
+    $relativeKey = $RelativePath -replace "\\", "/"
+    $markers = @()
+    switch ("$lang`:$relativeKey") {
+        "en:templates/tasks/TASK-template.md" {
+            $markers = @("## Status", "## Completion Handoff", "- [ ] commit status:", "- [ ] recommended next step:")
+        }
+        "en:templates/tasks/SUBTASK-template.md" {
+            $markers = @("## Parent Task", "## Completion Handoff", "- [ ] commit status:", "- [ ] recommended next step:")
+        }
+        "en:templates/evidence/EVIDENCE-000-template.md" {
+            $markers = @("## Goal", "## Results And Findings", "- [ ] expected result:", "- [ ] validation result: pass / fail / partial")
+        }
+        "en:templates/releases/RELEASE-template.md" {
+            $markers = @("## Checks", "## Next Options", "- [ ] CI checks:", "- [ ] recommended next step:")
+        }
+        "zh-cn:templates/tasks/TASK-template.md" {
+            $markers = @("## 状态", "## Completion Handoff", "- [ ] Git commit 状态：未提交 / 已提交", "- [ ] 推荐的下一步排期 (Next Task)：")
+        }
+        "zh-cn:templates/tasks/SUBTASK-template.md" {
+            $markers = @("## Parent Task", "## Completion Handoff", "- [ ] commit status：未提交 / 已提交", "- [ ] 推荐下一步：")
+        }
+        "zh-cn:templates/evidence/EVIDENCE-000-template.md" {
+            $markers = @("## 目标", "## 结果与发现", "- [ ] 预期结果应该是：", "- [ ] 验证结论：pass / fail / partial")
+        }
+        "zh-cn:templates/releases/RELEASE-template.md" {
+            $markers = @("## Release Checks", "## 下一步选项", "- [ ] CI checks：", "- [ ] 推荐下一步：")
+        }
+    }
+
+    if (-not (Test-Path -LiteralPath $absolutePath)) {
+        return
+    }
+
+    $raw = Get-Content -LiteralPath $absolutePath -Raw
+    foreach ($marker in $markers) {
+        if (-not $raw.Contains($marker)) {
+            $contractFailures.Add("$RelativePath is missing required parser-contract marker: $marker")
+        }
+    }
 }
 
 foreach ($relativePath in $requiredPaths) {
@@ -198,6 +284,13 @@ foreach ($relativePath in $docsToScan) {
     }
 }
 
+foreach ($relativePath in @("templates\tasks\TASK-template.md", "templates\tasks\SUBTASK-template.md", "templates\evidence\EVIDENCE-000-template.md")) {
+    Test-TemplateContract -RelativePath $relativePath
+}
+if ($workflowProfile -eq "full") {
+    Test-TemplateContract -RelativePath "templates\releases\RELEASE-template.md"
+}
+
 $evidenceFiles = Get-ChildItem -Path (Join-Path $Root "evidence\records") -Filter "EVIDENCE-*.md" -File -ErrorAction SilentlyContinue
 if (-not $evidenceFiles) {
     $warnings.Add("No evidence files found under evidence/records/")
@@ -210,7 +303,9 @@ if (-not $concreteTasks) {
 
 foreach ($task in $concreteTasks) {
     $raw = Get-Content -LiteralPath $task.FullName -Raw
-    $parallel = ($raw -match "(?im)^-\s*(?:\[[ xX]\]\s*)?decomposition decision:\s*parallel_subtasks\s*$") -or ($raw -match "(?im)^-\s*(?:\[[ xX]\]\s*)?parallelization candidate:\s*yes\s*$")
+    $parallel = ($raw -match "(?im)^-\s*(?:\[[ xX]\]\s*)?decomposition decision:\s*parallel_subtasks\s*$") -or
+        ($raw -match "(?im)^-\s*(?:\[[ xX]\]\s*)?parallelization candidate:\s*yes\s*$") -or
+        ($raw -match "(?im)^-\s*(?:\[[ xX]\]\s*)?拆分决策[:：]\s*parallel_subtasks\s*$")
     $hasSubtaskLink = $raw -match "(?im)tasks/(?:active/)?SUBTASK-\d{3}.*\.md"
     if ($parallel -and -not $hasSubtaskLink) {
         $warnings.Add("$($task.Name) is marked for parallel work but does not link any subtasks")
@@ -219,6 +314,15 @@ foreach ($task in $concreteTasks) {
 
 if ($taskCompletionGitMode -notin @("manual", "auto")) {
     $warnings.Add("workflow-config.env has unknown TASK_COMPLETION_GIT_MODE=$taskCompletionGitMode; use manual or auto")
+}
+if ($hotStateMode -notin @("branch-aware", "task-aware")) {
+    $warnings.Add("workflow-config.env has unknown HOT_STATE_MODE=$hotStateMode; use branch-aware or task-aware")
+}
+if ($externalIssueSource -notin @("none", "github", "jira", "linear")) {
+    $warnings.Add("workflow-config.env has unknown EXTERNAL_ISSUE_SOURCE=$externalIssueSource; use none, github, jira, or linear")
+}
+if ($connectorMode -ne "pull-only") {
+    $warnings.Add("workflow-config.env has unknown CONNECTOR_MODE=$connectorMode; use pull-only")
 }
 
 $taskFiles = @()
@@ -244,6 +348,14 @@ if (-not (Test-NextStepSignal -RootPath $Root)) {
     $warnings.Add("docs\progress.md does not contain a concrete next-step signal; before archiving work, add a recommended next step, a full-profile backlog item, a waiting user decision, or a terminal reason")
 }
 
+if ($contractFailures.Count -gt 0) {
+    Write-Output ""
+    Write-Output "Contract Failures:"
+    foreach ($failure in $contractFailures) {
+        Write-Output "[FAIL] $failure"
+    }
+}
+
 if ($warnings.Count -gt 0) {
     Write-Output ""
     Write-Output "Warnings:"
@@ -253,12 +365,12 @@ if ($warnings.Count -gt 0) {
 }
 
 Write-Output ""
-if ($missing.Count -eq 0) {
+if ($missing.Count -eq 0 -and $contractFailures.Count -eq 0) {
     Write-Output "Result: PASS"
 } else {
     Write-Output "Result: FAIL"
 }
 
-if ($Strict -and ($missing.Count -gt 0)) {
+if ($Strict -and (($missing.Count -gt 0) -or ($contractFailures.Count -gt 0))) {
     exit 1
 }

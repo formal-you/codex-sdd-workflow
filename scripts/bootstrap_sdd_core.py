@@ -7,6 +7,7 @@ from pathlib import Path
 from bootstrap_sdd_content import print_next_steps, root_agents, root_readme, testing_guide, workflow_config_content
 from bootstrap_sdd_fs import copy_file, copy_tree, merge_tree, rewrite_generated_tree_references, workflow_exists_message, write_text
 from bootstrap_sdd_git import maybe_setup_git
+from bootstrap_sdd_overlay import apply_template_overlay
 from bootstrap_sdd_settings import BootstrapSettings
 
 
@@ -19,6 +20,7 @@ def create_sdd_tree(
     workflow_profile: str,
     root_shims_enabled: bool,
     stack: str,
+    template_overlay: str | None,
     force: bool,
     dry_run: bool,
 ) -> None:
@@ -41,9 +43,21 @@ def create_sdd_tree(
             raise SystemExit(f"Profile assets not found: {profile_root}")
         merge_tree(profile_root, sdd_target, dry_run)
 
+    template_overlay_name = "none"
+    if template_overlay:
+        overlay_root = Path(template_overlay).expanduser().resolve()
+        template_overlay_name = apply_template_overlay(
+            overlay_root,
+            sdd_target=sdd_target,
+            lang=lang,
+            workflow_profile=workflow_profile,
+            supported_paths=settings.supported_template_overlay_paths,
+            dry_run=dry_run,
+        )
+
     write_text(
         sdd_target / "workflow-config.env",
-        workflow_config_content(sdd_dir, lang, workflow_profile, root_shims_enabled),
+        workflow_config_content(sdd_dir, lang, workflow_profile, root_shims_enabled, template_overlay_name),
         dry_run,
     )
     write_text(sdd_target / "docs" / "testing.md", testing_guide(settings, stack, lang, sdd_dir), dry_run)
@@ -92,6 +106,7 @@ def run_bootstrap(args: argparse.Namespace, settings: BootstrapSettings) -> None
         workflow_profile=args.workflow_profile,
         root_shims_enabled=not args.no_root_shims,
         stack=args.stack,
+        template_overlay=args.template_overlay,
         force=args.force,
         dry_run=args.dry_run,
     )

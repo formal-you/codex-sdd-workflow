@@ -116,7 +116,7 @@
 
 - repo-local 的 agile delivery scaffolding
 - 给小团队或探索期项目提供统一结构
-- 在没有接第三方系统时，先提供最小可运行的交付骨架
+- 在没有接第三方系统时，先提供最小可运行的交付支撑层
 
 根 README 已经在公开描述里明确了这条边界：`full` 是 beta scaffolding，不是完整敏捷管理平台，也不是 CI/CD 编排系统。
 

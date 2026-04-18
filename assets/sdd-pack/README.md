@@ -26,6 +26,8 @@ The root [`AGENTS.md`](../AGENTS.md) is the single operating contract for agents
   - project brief, process summary, architecture, testing, git workflow, progress, audit
 - `tasks/`
   - active tasks, archived history, and task index
+- `state/`
+  - branch-aware and task-aware hot-state notes plus retired note history
 - `templates/`
   - task, subtask, ADR, and evidence templates
 - `adr/`
@@ -42,8 +44,9 @@ The root [`AGENTS.md`](../AGENTS.md) is the single operating contract for agents
 3. create or update a task card
 4. for multi-part work, record the decomposition decision first; when parallel work is justified, create subtasks before implementation
 5. archive completed work from `tasks/active/` into `tasks/history/`, then refresh `docs/process.md`
-6. keep integration and final verification with the main agent
-7. record evidence when validating the workflow itself
+6. keep detailed branch or task scratch notes under `state/hot/`, then summarize only the shared recovery signal in `docs/progress.md`
+7. keep integration and final verification with the main agent
+8. record evidence when validating the workflow itself
 
 ## Git Baseline
 

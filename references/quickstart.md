@@ -33,6 +33,7 @@ python scripts/bootstrap_sdd_pack.py --target /path/to/repo --sdd-dir Workflow
 python scripts/bootstrap_sdd_pack.py --target /path/to/repo --lang en
 python scripts/bootstrap_sdd_pack.py --target /path/to/repo --git-mode auto
 python scripts/bootstrap_sdd_pack.py --target /path/to/repo --no-root-shims
+python scripts/bootstrap_sdd_pack.py --target /path/to/repo --template-overlay /path/to/overlay
 ```
 
 These examples are written for Linux, macOS, or WSL shells. In Windows PowerShell, use the same CLI flags with a Windows path such as `C:\path\to\repo`.
@@ -84,7 +85,10 @@ Always fill these first:
 - `SDD/docs/project-brief.md`
 - `SDD/docs/process.md`
 - `SDD/docs/progress.md`
+- `SDD/state/README.md`
 - the first real task card
+
+Keep shared recovery state in `SDD/docs/progress.md`. Keep branch-local or task-local scratch notes under `SDD/state/hot/`.
 
 Before finishing or archiving a task, leave one next-step signal:
 
@@ -106,6 +110,7 @@ When `full` is used, also maintain:
 - `SDD/docs/agile-delivery.md`
 - `SDD/docs/ci-cd.md`
 - backlog, sprint, and release records
+- connector boundary notes in `SDD/workflow-config.env` when external issue systems exist
 
 ## Read Next
 

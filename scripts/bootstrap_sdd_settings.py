@@ -23,6 +23,7 @@ class BootstrapSettings:
     core_directories: tuple[str, ...]
     root_files: tuple[str, ...]
     full_profile_dir: str
+    supported_template_overlay_paths: tuple[str, ...]
     gitignore_messages: dict[str, dict[str, object]]
     next_steps_messages: dict[str, dict[str, object]]
     testing_guide_defaults: dict[str, dict[str, tuple[str, ...]]]
@@ -43,6 +44,7 @@ def load_settings(config_path: Path = CONFIG_PATH, messages_path: Path = MESSAGE
         core_directories=tuple(raw["core_directories"]),
         root_files=tuple(raw["root_files"]),
         full_profile_dir=raw["full_profile_dir"],
+        supported_template_overlay_paths=tuple(raw["supported_template_overlay_paths"]),
         gitignore_messages=messages["gitignore"],
         next_steps_messages=messages["next_steps"],
         testing_guide_defaults={

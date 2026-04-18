@@ -23,6 +23,19 @@ if ([string]::IsNullOrWhiteSpace($Root)) {
     $Root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 }
 
+$hotStateBranchDir = "state/hot/branches"
+$hotStateTaskDir = "state/hot/tasks"
+if (Test-Path -LiteralPath (Join-Path $Root "workflow-config.env")) {
+    foreach ($line in Get-Content -LiteralPath (Join-Path $Root "workflow-config.env")) {
+        if ($line -match "^\s*HOT_STATE_BRANCH_DIR=(.+?)\s*$") {
+            $hotStateBranchDir = $matches[1].Trim()
+        }
+        if ($line -match "^\s*HOT_STATE_TASK_DIR=(.+?)\s*$") {
+            $hotStateTaskDir = $matches[1].Trim()
+        }
+    }
+}
+
 $repoRoot = (Resolve-Path (Join-Path $Root "..")).Path
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"
 $branch = "unknown"
@@ -47,6 +60,25 @@ try {
 } catch {
 }
 
+function ConvertTo-HotStateSafeName {
+    param([string]$Value)
+
+    $safe = $Value -replace "/", "__"
+    $safe = $safe -replace "[^A-Za-z0-9._-]+", "-"
+    $safe = $safe -replace "-+", "-"
+    return $safe.Trim("-")
+}
+
+$branchHotStatePath = ""
+if ($branch -and $branch -notin @("unknown", "unborn-or-detached")) {
+    $branchHotStatePath = Join-Path $hotStateBranchDir ("{0}.md" -f (ConvertTo-HotStateSafeName $branch))
+}
+
+$taskHotStatePath = ""
+if ($CurrentTask) {
+    $taskHotStatePath = Join-Path $hotStateTaskDir ([System.IO.Path]::GetFileName($CurrentTask))
+}
+
 $gitStatus = @()
 try {
     if ($gitRoot) {
@@ -63,6 +95,8 @@ Write-Output "- [x] timestamp: $timestamp"
 Write-Output "- [x] branch: $branch"
 Write-Output "- [x] git scope: $gitScope"
 Write-Output "- [ ] active task: $CurrentTask"
+Write-Output "- [ ] branch hot state file: $branchHotStatePath"
+Write-Output "- [ ] task hot state file: $taskHotStatePath"
 Write-Output "- [ ] files touched:"
 if ($FilesTouched.Count -gt 0) {
     foreach ($item in $FilesTouched) {

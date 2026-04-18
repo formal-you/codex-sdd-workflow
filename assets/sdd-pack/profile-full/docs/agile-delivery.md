@@ -25,3 +25,9 @@ Use this file when the workflow runs in the `full` profile.
 - carry-over work
 - release target or deployment window
 - CI or CD risks that block shipping
+
+## External Source Boundary
+
+- repo-local backlog, sprint, and release cards are execution scaffolding, not the only source of truth
+- when the team already has GitHub Issues, Jira, or Linear, prefer using this workflow as the execution mirror and handoff layer
+- connector hooks should pull external items into repo-local context; they should not silently write changes back to external systems

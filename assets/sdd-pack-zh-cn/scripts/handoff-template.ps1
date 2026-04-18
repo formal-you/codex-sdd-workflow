@@ -23,6 +23,19 @@ if ([string]::IsNullOrWhiteSpace($Root)) {
     $Root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 }
 
+$hotStateBranchDir = "state/hot/branches"
+$hotStateTaskDir = "state/hot/tasks"
+if (Test-Path -LiteralPath (Join-Path $Root "workflow-config.env")) {
+    foreach ($line in Get-Content -LiteralPath (Join-Path $Root "workflow-config.env")) {
+        if ($line -match "^\s*HOT_STATE_BRANCH_DIR=(.+?)\s*$") {
+            $hotStateBranchDir = $matches[1].Trim()
+        }
+        if ($line -match "^\s*HOT_STATE_TASK_DIR=(.+?)\s*$") {
+            $hotStateTaskDir = $matches[1].Trim()
+        }
+    }
+}
+
 $repoRoot = (Resolve-Path (Join-Path $Root "..")).Path
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"
 $branch = "unknown"
@@ -47,6 +60,25 @@ try {
 } catch {
 }
 
+function ConvertTo-HotStateSafeName {
+    param([string]$Value)
+
+    $safe = $Value -replace "/", "__"
+    $safe = $safe -replace "[^A-Za-z0-9._-]+", "-"
+    $safe = $safe -replace "-+", "-"
+    return $safe.Trim("-")
+}
+
+$branchHotStatePath = ""
+if ($branch -and $branch -notin @("unknown", "unborn-or-detached")) {
+    $branchHotStatePath = Join-Path $hotStateBranchDir ("{0}.md" -f (ConvertTo-HotStateSafeName $branch))
+}
+
+$taskHotStatePath = ""
+if ($CurrentTask) {
+    $taskHotStatePath = Join-Path $hotStateTaskDir ([System.IO.Path]::GetFileName($CurrentTask))
+}
+
 $gitStatus = @()
 try {
     if ($gitRoot) {
@@ -59,11 +91,13 @@ try {
 
 Write-Output "## Session Handoff"
 Write-Output ""
-Write-Output "- [x] 时间戳: $timestamp"
-Write-Output "- [x] 分支: $branch"
-Write-Output "- [x] git 范围: $gitScope"
+Write-Output "- [x] timestamp: $timestamp"
+Write-Output "- [x] branch: $branch"
+Write-Output "- [x] git scope: $gitScope"
 Write-Output "- [ ] active task: $CurrentTask"
-Write-Output "- [ ] 涉及文件:"
+Write-Output "- [ ] branch hot state file: $branchHotStatePath"
+Write-Output "- [ ] task hot state file: $taskHotStatePath"
+Write-Output "- [ ] files touched:"
 if ($FilesTouched.Count -gt 0) {
     foreach ($item in $FilesTouched) {
         Write-Output "  - [ ] $item"
@@ -72,7 +106,7 @@ if ($FilesTouched.Count -gt 0) {
     Write-Output "  - [ ] "
 }
 
-Write-Output "- [ ] 执行命令:"
+Write-Output "- [ ] commands run:"
 if ($CommandsRun.Count -gt 0) {
     foreach ($item in $CommandsRun) {
         Write-Output "  - [ ] $item"
@@ -81,18 +115,18 @@ if ($CommandsRun.Count -gt 0) {
     Write-Output "  - [ ] "
 }
 
-Write-Output "- [ ] 未解决风险或 blocker：$Risk"
+Write-Output "- [ ] open risk or blocker: $Risk"
 Write-Output "- [ ] commit status: $CommitStatus"
-Write-Output "- [ ] 未提交原因: $UncommittedReason"
-Write-Output "- [ ] 推荐 commit message: $CommitMessage"
-Write-Output "- [ ] 推荐的下一步明确动作：$NextAction"
-Write-Output "- [ ] 等待用户决策："
-Write-Output "- [ ] 无需下一步原因："
-Write-Output "- [x] git 状态快照:"
+Write-Output "- [ ] uncommitted reason: $UncommittedReason"
+Write-Output "- [ ] recommended commit message: $CommitMessage"
+Write-Output "- [ ] recommended next step: $NextAction"
+Write-Output "- [ ] waiting on user decision: "
+Write-Output "- [ ] no next step because: "
+Write-Output "- [x] git status snapshot:"
 if ($gitStatus.Count -gt 0) {
     foreach ($line in $gitStatus) {
         Write-Output "  - [x] $line"
     }
 } else {
-    Write-Output "  - [x] 工作区干净或 git 不可用"
+    Write-Output "  - [x] clean or unavailable"
 }

@@ -12,6 +12,19 @@ if ([string]::IsNullOrWhiteSpace($Root)) {
     $Root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 }
 
+$hotStateTaskDir = "state/hot/tasks"
+$hotStateHistoryDir = "state/history"
+if (Test-Path -LiteralPath (Join-Path $Root "workflow-config.env")) {
+    foreach ($line in Get-Content -LiteralPath (Join-Path $Root "workflow-config.env")) {
+        if ($line -match "^\s*HOT_STATE_TASK_DIR=(.+?)\s*$") {
+            $hotStateTaskDir = $matches[1].Trim()
+        }
+        if ($line -match "^\s*HOT_STATE_HISTORY_DIR=(.+?)\s*$") {
+            $hotStateHistoryDir = $matches[1].Trim()
+        }
+    }
+}
+
 $activeDir = Join-Path $Root "tasks\active"
 $historyDir = Join-Path $Root "tasks\history"
 
@@ -26,13 +39,24 @@ if (-not $sourcePath.StartsWith($activeDir, [System.StringComparison]::OrdinalIg
 }
 
 $destinationPath = Join-Path $historyDir ([System.IO.Path]::GetFileName($sourcePath))
+$taskHotStateSource = Join-Path (Join-Path $Root $hotStateTaskDir) ([System.IO.Path]::GetFileName($sourcePath))
+$taskHotStateDestination = Join-Path (Join-Path (Join-Path $Root $hotStateHistoryDir) "tasks") ([System.IO.Path]::GetFileName($sourcePath))
 
 if ($DryRun) {
     Write-Host "[DRY RUN] Would archive $sourcePath -> $destinationPath"
+    if (Test-Path -LiteralPath $taskHotStateSource) {
+        Write-Host "[DRY RUN] Would retire task hot state $taskHotStateSource -> $taskHotStateDestination"
+    }
     exit 0
 }
 
 Move-Item -LiteralPath $sourcePath -Destination $destinationPath -Force
 Write-Host "Archived $destinationPath"
+if (Test-Path -LiteralPath $taskHotStateSource) {
+    New-Item -ItemType Directory -Path ([System.IO.Path]::GetDirectoryName($taskHotStateDestination)) -Force | Out-Null
+    Move-Item -LiteralPath $taskHotStateSource -Destination $taskHotStateDestination -Force
+    Write-Host "Retired task hot state $taskHotStateDestination"
+}
 Write-Host "Remember to update docs/process.md and docs/progress.md"
+Write-Host "Keep only the shared aggregate summary in progress.md; detailed branch or task scratch state belongs under state/hot/."
 Write-Host "Before the next session, leave a next-step entry: a new active task, a progress.md recommended next step, or a full-profile backlog item."

@@ -18,6 +18,8 @@ next_action=""
 commit_status=""
 commit_message=""
 uncommitted_reason=""
+hot_state_branch_dir="state/hot/branches"
+hot_state_task_dir="state/hot/tasks"
 declare -a files_touched=()
 declare -a commands_run=()
 
@@ -70,6 +72,24 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [[ -f "$root/workflow-config.env" ]]; then
+  while IFS='=' read -r key value; do
+    value="${value%$'\r'}"
+    case "$key" in
+      HOT_STATE_BRANCH_DIR)
+        hot_state_branch_dir="$value"
+        ;;
+      HOT_STATE_TASK_DIR)
+        hot_state_task_dir="$value"
+        ;;
+    esac
+  done < "$root/workflow-config.env"
+fi
+
+sanitize_hot_state_name() {
+  printf '%s' "$1" | sed -E 's#/#__#g; s#[^A-Za-z0-9._-]+#-#g; s#-+#-#g; s#^-+##; s#-+$##'
+}
+
 timestamp="$(date '+%Y-%m-%d %H:%M:%S %z')"
 git_root="$(git -C "$repo_root" rev-parse --show-toplevel 2>/dev/null || true)"
 if [[ -n "$git_root" ]]; then
@@ -88,11 +108,23 @@ else
   git_status=""
 fi
 
+branch_hot_state_path=""
+if [[ -n "$branch" && "$branch" != "unknown" && "$branch" != "unborn-or-detached" ]]; then
+  branch_hot_state_path="$hot_state_branch_dir/$(sanitize_hot_state_name "$branch").md"
+fi
+
+task_hot_state_path=""
+if [[ -n "$current_task" ]]; then
+  task_hot_state_path="$hot_state_task_dir/$(basename "$current_task")"
+fi
+
 printf '## Session Handoff\n\n'
 printf -- '- [x] timestamp: %s\n' "$timestamp"
 printf -- '- [x] branch: %s\n' "$branch"
 printf -- '- [x] git scope: %s\n' "$git_scope"
 printf -- '- [ ] active task: %s\n' "$current_task"
+printf -- '- [ ] branch hot state file: %s\n' "$branch_hot_state_path"
+printf -- '- [ ] task hot state file: %s\n' "$task_hot_state_path"
 
 printf -- '- [ ] files touched:\n'
 if (( ${#files_touched[@]} > 0 )); then

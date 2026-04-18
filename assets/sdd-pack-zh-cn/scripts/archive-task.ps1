@@ -12,6 +12,19 @@ if ([string]::IsNullOrWhiteSpace($Root)) {
     $Root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 }
 
+$hotStateTaskDir = "state/hot/tasks"
+$hotStateHistoryDir = "state/history"
+if (Test-Path -LiteralPath (Join-Path $Root "workflow-config.env")) {
+    foreach ($line in Get-Content -LiteralPath (Join-Path $Root "workflow-config.env")) {
+        if ($line -match "^\s*HOT_STATE_TASK_DIR=(.+?)\s*$") {
+            $hotStateTaskDir = $matches[1].Trim()
+        }
+        if ($line -match "^\s*HOT_STATE_HISTORY_DIR=(.+?)\s*$") {
+            $hotStateHistoryDir = $matches[1].Trim()
+        }
+    }
+}
+
 $activeDir = Join-Path $Root "tasks\active"
 $historyDir = Join-Path $Root "tasks\history"
 
@@ -22,17 +35,28 @@ if ([System.IO.Path]::IsPathRooted($TaskPath)) {
 }
 
 if (-not $sourcePath.StartsWith($activeDir, [System.StringComparison]::OrdinalIgnoreCase)) {
-    throw "只能归档 tasks/active/ 下的任务: $sourcePath"
+    throw "Only tasks under tasks/active/ can be archived: $sourcePath"
 }
 
 $destinationPath = Join-Path $historyDir ([System.IO.Path]::GetFileName($sourcePath))
+$taskHotStateSource = Join-Path (Join-Path $Root $hotStateTaskDir) ([System.IO.Path]::GetFileName($sourcePath))
+$taskHotStateDestination = Join-Path (Join-Path (Join-Path $Root $hotStateHistoryDir) "tasks") ([System.IO.Path]::GetFileName($sourcePath))
 
 if ($DryRun) {
-    Write-Host "[DRY RUN] 将归档 $sourcePath -> $destinationPath"
+    Write-Host "[DRY RUN] Would archive $sourcePath -> $destinationPath"
+    if (Test-Path -LiteralPath $taskHotStateSource) {
+        Write-Host "[DRY RUN] Would retire task hot state $taskHotStateSource -> $taskHotStateDestination"
+    }
     exit 0
 }
 
 Move-Item -LiteralPath $sourcePath -Destination $destinationPath -Force
-Write-Host "已归档 $destinationPath"
-Write-Host "请同步更新 docs/process.md 与 docs/progress.md"
+Write-Host "Archived $destinationPath"
+if (Test-Path -LiteralPath $taskHotStateSource) {
+    New-Item -ItemType Directory -Path ([System.IO.Path]::GetDirectoryName($taskHotStateDestination)) -Force | Out-Null
+    Move-Item -LiteralPath $taskHotStateSource -Destination $taskHotStateDestination -Force
+    Write-Host "Retired task hot state $taskHotStateDestination"
+}
+Write-Host "记得同步更新 docs/process.md 与 docs/progress.md"
+Write-Host "progress.md 只保留共享聚合摘要；branch/task 级细节便签请放在 state/hot/。"
 Write-Host "进入下一次会话前，请留下下一步入口：新的 active task、progress.md 的推荐下一步，或 full profile 下的 backlog 条目。"

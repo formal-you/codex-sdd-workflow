@@ -36,11 +36,18 @@
     "templates",
     "adr",
     "evidence",
+    "state",
     "scripts"
   ],
   "root_files": [
     "README.md",
     "workflow.md"
   ],
-  "full_profile_dir": "profile-full"
+  "full_profile_dir": "profile-full",
+  "supported_template_overlay_paths": [
+    "templates/tasks/TASK-template.md",
+    "templates/tasks/SUBTASK-template.md",
+    "templates/evidence/EVIDENCE-000-template.md",
+    "templates/releases/RELEASE-template.md"
+  ]
 }

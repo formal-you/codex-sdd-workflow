@@ -10,6 +10,22 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 root="$(cd "$script_dir/.." && pwd)"
 dry_run=0
 task_path=""
+hot_state_task_dir="state/hot/tasks"
+hot_state_history_dir="state/history"
+
+if [[ -f "$root/workflow-config.env" ]]; then
+  while IFS='=' read -r key value; do
+    value="${value%$'\r'}"
+    case "$key" in
+      HOT_STATE_TASK_DIR)
+        hot_state_task_dir="$value"
+        ;;
+      HOT_STATE_HISTORY_DIR)
+        hot_state_history_dir="$value"
+        ;;
+    esac
+  done < "$root/workflow-config.env"
+fi
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -60,13 +76,26 @@ case "$source_path" in
 esac
 
 destination_path="$history_dir/$(basename "$source_path")"
+task_hot_state_source="$root/$hot_state_task_dir/$(basename "$source_path")"
+task_hot_state_destination="$root/$hot_state_history_dir/tasks/$(basename "$source_path")"
 
 if [[ "$dry_run" -eq 1 ]]; then
   echo "[DRY RUN] Would archive $source_path -> $destination_path"
+  if [[ -f "$task_hot_state_source" ]]; then
+    echo "[DRY RUN] Would retire task hot state $task_hot_state_source -> $task_hot_state_destination"
+  fi
   exit 0
 fi
 
 mv "$source_path" "$destination_path"
 echo "Archived $destination_path"
+
+if [[ -f "$task_hot_state_source" ]]; then
+  mkdir -p "$(dirname "$task_hot_state_destination")"
+  mv "$task_hot_state_source" "$task_hot_state_destination"
+  echo "Retired task hot state $task_hot_state_destination"
+fi
+
 echo "Remember to update docs/process.md and docs/progress.md"
+echo "Keep only the shared aggregate summary in progress.md; detailed branch or task scratch state belongs under state/hot/."
 echo "Before the next session, leave a next-step entry: a new active task, a progress.md recommended next step, or a full-profile backlog item."
