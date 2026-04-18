@@ -525,12 +525,12 @@ class BootstrapWorkflowTests(unittest.TestCase):
         changelog = CHANGELOG.read_text(encoding="utf-8")
 
         self.assertIn("Codex SDD Workflow", readme)
-        self.assertIn("Git completion handoff discipline", readme)
+        self.assertIn("Git 完成闭环", readme)
         self.assertIn("${CODEX_HOME:-$HOME/.codex}/skills", readme)
-        self.assertIn("在 Codex 中使用", readme)
+        self.assertIn("快速上手", readme)
         self.assertIn("先预览将要写入的内容", readme)
-        self.assertIn("默认使用 `lite`", readme)
-        self.assertIn("full` is beta scaffolding", readme)
+        self.assertIn("默认使用更轻量的", readme)
+        self.assertIn("(Beta)", readme)
         self.assertNotIn("references/README.md", readme)
 
         self.assertIn("MIT License", license_text)
