@@ -1,17 +1,19 @@
 # Codex SDD Workflow
 
-`codex-sdd-workflow` 是一个 Codex workflow skill，帮助你为已有代码仓库初始化或升级一套 repo-local 的工程执行工作区。
+`codex-sdd-workflow` 是一个面向 Codex 的 SDD workflow skill。它把一套可恢复、可审计、可持续迭代的工程执行流程安装到已有代码仓库中，让 Codex 围绕仓库内的文档、任务和验证记录开展工作，而不是只依赖聊天上下文。
 
-它把跨 session 恢复、task/subtask 管理、handoff、验证、next-step discipline、Git completion handoff discipline，以及可选的 agile delivery scaffolding 沉淀到目标 repo 中，让日常执行状态随代码保留，而不是依赖聊天上下文。
+这套 workflow 会在目标 repo 内生成 `SDD/` 工作区，用于承载 project brief、architecture notes、task graph、handoff、evidence、validation scripts、next-step discipline、Git completion handoff discipline，以及可选的 agile delivery scaffolding。它适合希望让 Codex 长期参与项目演进、多人协作或跨 session 持续推进的代码仓库。
 
 ## 功能概览
 
-- 在 existing repo 中生成 `SDD/` workflow 工作区
-- 生成根 `AGENTS.md` 和 `README.md` shim，除非显式禁用
-- 支持 parent task、subtask、handoff、ADR、evidence 和验证脚本
-- 支持 `lite` 与 `full` 两种 profile
-- 支持 Linux/macOS/WSL shell，并保留 PowerShell 脚本
-- 提供 next-step handoff 和 Git handoff 纪律，方便跨 session 继续推进
+- SDD 工作区：在已有代码仓库中生成 repo-local 的 `SDD/` 目录，保存项目简介、流程摘要、架构记录、测试说明、Git 约定和进度状态。
+- Agent 工作契约：默认生成根 `AGENTS.md` 和 `README.md` shim，让 Codex 每次进入仓库时都有稳定的启动顺序和执行边界。
+- Task graph：用 parent task 和 subtask 记录拆分决策、owned scope、验收标准、验证命令和最终 handoff。
+- Handoff 与恢复：通过 `session-brief`、`handoff-template` 和 `progress.md` 保留跨 session 恢复所需的当前状态、风险、下一步建议和 Git 状态。
+- 验证与审计：内置 `validate-sdd`、evidence 模板和 workflow audit 模板，帮助检查 workflow 是否真实被运行、是否还存在占位内容或结构缺口。
+- 持续迭代纪律：要求任务结束前留下 next-step entry，并按 `TASK_COMPLETION_GIT_MODE` 记录 commit 状态、未提交原因和推荐 commit message。
+- Profile 分层：`lite` 适合准确开发和轻量协作；`full` 增加 backlog、sprint、release 和 CI/CD-oriented scaffolding。
+- 跨平台脚本：默认以 Linux/macOS/WSL shell 为主，同时保留 PowerShell 脚本。
 
 ## 安装
 
