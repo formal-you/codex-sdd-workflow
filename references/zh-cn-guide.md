@@ -134,8 +134,7 @@ PowerShell 对应命令分别是 `new-subtask.ps1` 与 `archive-task.ps1`。
 
 任务结束或归档前，必须留下一个下一步信号：
 
-- 新的 active task
-- `SDD/docs/progress.md` 里的“下一步选项 / 推荐下一步”
+- `SDD/docs/progress.md` 里的“推荐的下一步明确动作”
 - 使用 `full` 时的 backlog 条目
 - 或者明确写出等待用户决策 / 项目已经终态的原因
 

@@ -18,11 +18,11 @@
 ## 文件职责
 
 - `project-brief.md`：产品目标、用户、范围与约束
-- `process.md`：长期流程总摘要、当前任务指针与历史归档摘要
+- `process.md`：长期项目视角、归档摘要与目录指针
 - `architecture.md`：模块划分、ownership 与高风险区域
 - `testing.md`：测试命令与 Quality Gate
 - `git-workflow.md`：分支命名、提交规范与 PR 准备
-- `progress.md`：当前阶段状态与 handoff
+- `progress.md`：短时状态追踪与 Session Handoff
 - `workflow-audit.md`：验证 workflow 本身时的评分和结论
 
 ## Full Profile 增量内容

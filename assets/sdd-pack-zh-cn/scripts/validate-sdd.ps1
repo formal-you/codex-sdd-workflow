@@ -94,23 +94,26 @@ if ($workflowProfile -eq "full") {
 
 $legacyActiveTaskLabel = "活跃" + "任务"
 $placeholderPatterns = @(
+    "^\s*-\s*\[\s\]\s*总体进度或阶段：\s*$",
     "^\s*-\s*\[\s\]\s*一句话总结已填写\s*$",
     "^\s*-\s*\[\s\]\s*用一句话描述这个产品或系统：\s*$",
     "^\s*-\s*\[\s\]\s*这个项目要解决什么痛点？\s*$",
     "^\s*-\s*\[\s\]\s*目标 1：\s*$",
     "^\s*-\s*\[\s\]\s*项目状态：\s*$",
     "^\s*-\s*\[\s\]\s*$([regex]::Escape($legacyActiveTaskLabel))：\s*$",
-    "^\s*-\s*\[\s\]\s*当前 active task：`tasks/active/TASK-XXX-sample\.md`\s*$",
-    "^\s*-\s*\[\s\]\s*当前主题：\s*$",
+    "^\s*-\s*\[\s\]\s*当前 Active Task：`tasks/active/TASK-XXX\.md`\s*$",
+    "^\s*-\s*\[\s\]\s*Git 分支与状态：\s*$",
+    "^\s*-\s*\[\s\]\s*\[YYYY-MM-DD\]\s*发现：\s*$",
+    "^\s*-\s*\[\s\]\s*\[YYYY-MM-DD\]\s*结论：\s*$",
     "^\s*-\s*\[\s\]\s*问题：\s*$",
-    "^\s*-\s*\[\s\]\s*拆分状态：\s*$",
+    "^\s*-\s*\[\s\]\s*集成状态：\s*$",
     "^\s*Describe the product or system in one sentence\.\s*$",
     "^\s*-\s*What pain does this project solve\?\s*$",
     "^\s*-\s*Goal 1:\s*$",
     "^\s*-\s*project state:\s*$",
     "^\s*-\s*active task:\s*$",
     "^\s*-\s*Question:\s*$",
-    "^\s*-\s*decomposition status:\s*$"
+    "^\s*-\s*integration status:\s*$"
 )
 
 $missing = New-Object System.Collections.Generic.List[string]
@@ -126,7 +129,7 @@ function Test-NextStepSignal {
 
     foreach ($line in Get-Content -LiteralPath $progressPath) {
         $normalized = $line -replace "^\s*-\s*(?:\[[ xX]\]\s*)?", ""
-        if ($normalized -match "^(recommended next step|next active task|backlog item|waiting on user decision|no next step because|推荐下一步|下一步 active task|backlog 条目|等待用户决策|无需下一步原因)[:：]\s*(\S.*)$") {
+        if ($normalized -match "^(recommended next step|next active task|backlog item|waiting on user decision|no next step because|推荐下一步|推荐的下一步明确动作|下一步 active task|backlog 条目|等待用户决策|无需下一步原因)[:：]\s*(\S.*)$") {
             $value = $matches[2].Trim()
             if ($value -notmatch "^(none|n/a|N/A|无)$" -and $value -notmatch "(TASK-XXX|BACKLOG-XXX|sample)") {
                 return $true
@@ -242,7 +245,7 @@ foreach ($task in $taskFiles) {
 }
 
 if (-not (Test-NextStepSignal -RootPath $Root)) {
-    $warnings.Add("docs\progress.md 还没有具体下一步信号；归档前请补充下一步 active task、下一步选项推荐、full profile backlog 条目、等待用户决策，或终态原因")
+    $warnings.Add("docs\progress.md 还没有具体下一步信号；归档前请补充推荐的下一步明确动作、full profile backlog 条目、等待用户决策，或终态原因")
 }
 
 if ($warnings.Count -gt 0) {

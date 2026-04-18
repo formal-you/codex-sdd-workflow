@@ -11,9 +11,9 @@
 
 ## Definition Of Ready
 
-1. scope is understandable
-2. acceptance signal is known
-3. owner or next reviewer is known
+- [ ] scope is understandable
+- [ ] acceptance signal is known
+- [ ] owner or next reviewer is known
 
 ## Links
 

@@ -55,6 +55,7 @@
 - [ ] 推荐 commit message：
 - [ ] 下一步 active task：
 - [ ] 推荐的下一步排期 (Next Task)：
+- [ ] backlog 条目：
 - [ ] 无需下一步原因：
 
 ## Subagent 输出格式

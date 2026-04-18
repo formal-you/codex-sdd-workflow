@@ -2,21 +2,19 @@
 
 ## Goal
 
-What did this validation attempt to prove?
+- [ ] validation target:
 
-## Commands Run
+## Execution
 
-- command:
+- [ ] command:
 
-## Findings
+## Results And Findings
 
-- finding:
+- [ ] expected result:
+- [ ] finding:
+- [ ] change:
 
-## Changes Made
+## Conclusion
 
-- change:
-
-## Remaining Gaps
-
-- gap:
-
+- [ ] validation result: pass / fail / partial
+- [ ] remaining gap:

@@ -101,7 +101,7 @@ Write-Output "- 当前分支: $branch"
 Write-Output "- git 范围: $gitScope"
 Write-Output ""
 
-foreach ($heading in @("当前焦点", "当前任务板", "近期完成", "归档规则")) {
+foreach ($heading in @("Macro Focus", "Rules of Archiving", "Recent History", "Pointers", "Current Focus", "近期归档", "Workflow Rules & Index", "当前焦点", "当前任务板", "近期完成", "归档规则")) {
     $body = Get-MarkdownSection -Path $processPath -Heading $heading
     if ($body) {
         Write-Output "## $heading"
@@ -112,7 +112,7 @@ foreach ($heading in @("当前焦点", "当前任务板", "近期完成", "归�
 
 $legacyGitHandoffHeading = "Git " + "收" + "口"
 $legacyBlockersHeading = "阻塞" + "项"
-foreach ($heading in @("当前摘要", "当前", "Git handoff", $legacyGitHandoffHeading, "下一步选项", "下一步", "并行工作摘要", "Blockers", $legacyBlockersHeading)) {
+foreach ($heading in @("Current", "Recent Findings", "Session Handoff", "Concurrency", "当前上下文", "协作区", "当前摘要", "当前", "Git handoff", $legacyGitHandoffHeading, "下一步选项", "下一步", "并行工作摘要", "Blockers", $legacyBlockersHeading)) {
     $body = Get-MarkdownSection -Path $progressPath -Heading $heading
     if ($body) {
         Write-Output "## $heading"

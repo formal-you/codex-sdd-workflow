@@ -10,7 +10,7 @@
 - 多人协作时，任务没留下决策记录、验证证据或下一步方向？
 - Session 意外断开，之前的进度、风险、分析全部丢失？
 
-**Codex SDD Workflow** 就是为了解决这些问题而生的。它在你的仓库内建立一套 **持久化工作区**，让 Codex 每次回来都能立即接续上下文——有任务图、有交接文档、有验证脚本、有本地执行纪律。不靠聊天记忆，靠仓库里的文件。
+**Codex SDD Workflow** 就是为了解决这些问题而生的。它在你的仓库内建立一套 **持久化工作区**，让 Codex 每次回来都能立即接续上下文——有任务图、有交接文档、有验证脚本、有完整的执行规范。不靠聊天记忆，靠仓库里的文件。
 
 ---
 
@@ -23,7 +23,7 @@
 | **结构化任务图** | Parent task → Subtask 的分层任务系统，含验收标准、验证命令、scope 界定 | 复杂工程不会变成"一锅粥"，每步可追踪、可验证 |
 | **Session 生存 & 交接** | `session-brief` 脚本 + `handoff` 模板 + `progress.md` 持久状态 | 断连不丢活，换人不丢线——跨 session 无缝恢复 |
 | **验证 & 审计链** | 内置 `validate-sdd`、evidence 模板、workflow audit 模板 | 确保流程"真的被执行了"，而非停留在纸面 |
-| **下一步纪律** | 任务结束前必须留下 next-step 记录 | 每个 session 结束都指向"接下来该做什么"，不会断档 |
+| **下一步指引** | 任务结束前必须留下 next-step 记录 | 每个 session 结束都指向"接下来该做什么"，不会断档 |
 | **Git 完成闭环** | 按 `TASK_COMPLETION_GIT_MODE` 管理 commit 状态和推荐 message | 不会静默 commit，也不会忘记记录"为什么没提交" |
 | **双 Profile 灵活选择** | `lite` 精准开发 / `full` 敏捷交付 scaffolding | 按需选择，从轻量协作到完整 sprint 管理一步切换 |
 | **跨平台支持** | Shell (Linux/macOS/WSL) 为主，PowerShell 完整支持 | Windows、Mac、Linux 团队无缝协作 |
@@ -82,7 +82,7 @@ git clone <repo-url> "$env:CODEX_HOME\skills\codex-sdd-workflow"
 
 ### 安装后会发生什么？
 
-Codex 不会停在安装步骤——它会继续阅读目标仓库中的 `AGENTS.md`、`SDD/docs/process.md` 和 `SDD/workflow.md`，然后帮你创建第一个 parent task，直接进入工作状态。
+**首次接入时**，Codex 会在目标仓库中生成完整的 `SDD/` 工作区、根目录 `AGENTS.md` 和 `README.md` shim，然后阅读它们并帮你创建第一个 parent task，直接进入工作状态。**已有旧版 workflow 时**，Codex 会安全升级现有结构，保留你的任务记录和进度文档，然后继续从上次中断的地方推进。
 
 ---
 
@@ -115,7 +115,7 @@ Codex 不会停在安装步骤——它会继续阅读目标仓库中的 `AGENTS
 
 ## 📂 你的仓库会变成什么样？
 
-安装完成后，Codex 会在目标仓库中生成一个 `SDD/` 工作区（同时在根目录生成 `AGENTS.md` 和 `README.md` shim）。以下是 **lite profile** 的完整目录结构：
+以下是 **lite profile** 生成后的完整目录结构（`--no-root-shims` 模式下不会生成根目录的 `AGENTS.md` 和 `README.md`）：
 
 ```
 your-repo/

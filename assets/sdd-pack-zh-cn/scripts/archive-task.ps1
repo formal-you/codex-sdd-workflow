@@ -35,4 +35,4 @@ if ($DryRun) {
 Move-Item -LiteralPath $sourcePath -Destination $destinationPath -Force
 Write-Host "已归档 $destinationPath"
 Write-Host "请同步更新 docs/process.md 与 docs/progress.md"
-Write-Host "进入下一次会话前，请留下下一步入口：新的 active task、progress.md 的下一步选项推荐，或 full profile 下的 backlog 条目。"
+Write-Host "进入下一次会话前，请留下下一步入口：新的 active task、progress.md 的推荐下一步，或 full profile 下的 backlog 条目。"

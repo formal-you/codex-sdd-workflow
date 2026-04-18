@@ -117,21 +117,23 @@ if [[ "$workflow_profile" == "full" ]]; then
 fi
 
 placeholder_patterns=(
+  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*current phase:[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*project state:[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*active task:[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*active task: \`tasks/active/TASK-XXX-sample\\.md\`[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*current theme:[[:space:]]*$"
+  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*git branch and status:[[:space:]]*$"
+  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*\\[YYYY-MM-DD\\][[:space:]]*finding:[[:space:]]*$"
+  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*\\[YYYY-MM-DD\\][[:space:]]*conclusion:[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*Question:[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*decomposition status:[[:space:]]*$"
+  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*integration status:[[:space:]]*$"
   "^[[:space:]]*Describe the product or system in one sentence\\.[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*What pain does this project solve\\?[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*Goal 1:[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*project state:[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*active task:[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*active task: \`tasks/active/TASK-XXX-sample\\.md\`[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*current theme:[[:space:]]*$"
+  "^[[:space:]]*-[[:space:]]*active task: \`tasks/active/TASK-XXX\\.md\`[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*Question:[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*decomposition status:[[:space:]]*$"
+  "^[[:space:]]*-[[:space:]]*integration status:[[:space:]]*$"
 )
 
 missing=()
@@ -144,7 +146,7 @@ has_next_step_signal() {
   {
     line=$0
     sub(/^[[:space:]]*-[[:space:]]*(\[[ xX]\][[:space:]]*)?/, "", line)
-    if (line ~ /^(recommended next step|next active task|backlog item|waiting on user decision|no next step because|推荐下一步|下一步活跃 task|backlog 条目|等待用户决策|无需下一步原因):[[:space:]]*[^[:space:]]/) {
+    if (line ~ /^(recommended next step|next active task|backlog item|waiting on user decision|no next step because|推荐下一步|推荐的下一步明确动作|下一步 active task|backlog 条目|等待用户决策|无需下一步原因):[[:space:]]*[^[:space:]]/) {
       value=line
       sub(/^[^:：]+[:：][[:space:]]*/, "", value)
       if (value !~ /^(none|n\/a|N\/A|无)$/ && value !~ /(TASK-XXX|BACKLOG-XXX|sample)/) {
@@ -244,7 +246,7 @@ for path in "$root"/tasks/active/TASK-*.md "$root"/tasks/active/SUBTASK-*.md "$r
 done
 
 if ! has_next_step_signal; then
-  warnings+=("docs/progress.md does not contain a concrete next-step signal; before archiving work, add a next active task, a Next Options recommendation, a full-profile backlog item, a waiting user decision, or a terminal reason")
+  warnings+=("docs/progress.md does not contain a concrete next-step signal; before archiving work, add a recommended next step, a full-profile backlog item, a waiting user decision, or a terminal reason")
 fi
 
 if (( ${#warnings[@]} > 0 )); then

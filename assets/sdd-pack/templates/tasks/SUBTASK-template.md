@@ -37,9 +37,9 @@ Only these files or modules may be changed:
 
 ## Acceptance Criteria
 
-1. behavior:
-2. regression protection:
-3. handoff notes for the main agent:
+- [ ] behavior passes:
+- [ ] regression protection passes:
+- [ ] handoff notes for the main agent are recorded:
 
 ## Verification
 
@@ -54,7 +54,6 @@ Only these files or modules may be changed:
 - [ ] recommended commit message:
 - [ ] next active task:
 - [ ] recommended next step:
-- [ ] backlog item if using full profile:
 - [ ] no next step because:
 
 ## Output Format

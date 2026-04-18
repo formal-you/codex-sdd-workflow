@@ -69,4 +69,4 @@ fi
 mv "$source_path" "$destination_path"
 echo "Archived $destination_path"
 echo "Remember to update docs/process.md and docs/progress.md"
-echo "Before the next session, leave a next-step entry: a new active task, a progress.md Next Options recommendation, or a full-profile backlog item."
+echo "Before the next session, leave a next-step entry: a new active task, a progress.md recommended next step, or a full-profile backlog item."

@@ -93,21 +93,23 @@ if ($workflowProfile -eq "full") {
 }
 
 $placeholderPatterns = @(
+    "^\s*-\s*\[\s\]\s*current phase:\s*$",
     "^\s*-\s*\[\s\]\s*project state:\s*$",
     "^\s*-\s*\[\s\]\s*active task:\s*$",
     "^\s*-\s*\[\s\]\s*active task: `tasks/active/TASK-XXX-sample\.md`\s*$",
-    "^\s*-\s*\[\s\]\s*current theme:\s*$",
+    "^\s*-\s*\[\s\]\s*git branch and status:\s*$",
+    "^\s*-\s*\[\s\]\s*\[YYYY-MM-DD\]\s*finding:\s*$",
+    "^\s*-\s*\[\s\]\s*\[YYYY-MM-DD\]\s*conclusion:\s*$",
     "^\s*-\s*\[\s\]\s*Question:\s*$",
-    "^\s*-\s*\[\s\]\s*decomposition status:\s*$",
+    "^\s*-\s*\[\s\]\s*integration status:\s*$",
     "^\s*Describe the product or system in one sentence\.\s*$",
     "^\s*-\s*What pain does this project solve\?\s*$",
     "^\s*-\s*Goal 1:\s*$",
     "^\s*-\s*project state:\s*$",
     "^\s*-\s*active task:\s*$",
-    "^\s*-\s*active task: `tasks/active/TASK-XXX-sample\.md`\s*$",
-    "^\s*-\s*current theme:\s*$",
+    "^\s*-\s*active task: `tasks/active/TASK-XXX\.md`\s*$",
     "^\s*-\s*Question:\s*$",
-    "^\s*-\s*decomposition status:\s*$"
+    "^\s*-\s*integration status:\s*$"
 )
 
 $missing = New-Object System.Collections.Generic.List[string]
@@ -123,7 +125,7 @@ function Test-NextStepSignal {
 
     foreach ($line in Get-Content -LiteralPath $progressPath) {
         $normalized = $line -replace "^\s*-\s*(?:\[[ xX]\]\s*)?", ""
-        if ($normalized -match "^(recommended next step|next active task|backlog item|waiting on user decision|no next step because|推荐下一步|下一步活跃 task|backlog 条目|等待用户决策|无需下一步原因)[:：]\s*(\S.*)$") {
+        if ($normalized -match "^(recommended next step|next active task|backlog item|waiting on user decision|no next step because|推荐下一步|推荐的下一步明确动作|下一步 active task|backlog 条目|等待用户决策|无需下一步原因)[:：]\s*(\S.*)$") {
             $value = $matches[2].Trim()
             if ($value -notmatch "^(none|n/a|N/A|无)$" -and $value -notmatch "(TASK-XXX|BACKLOG-XXX|sample)") {
                 return $true
@@ -239,7 +241,7 @@ foreach ($task in $taskFiles) {
 }
 
 if (-not (Test-NextStepSignal -RootPath $Root)) {
-    $warnings.Add("docs\progress.md does not contain a concrete next-step signal; before archiving work, add a next active task, a Next Options recommendation, a full-profile backlog item, a waiting user decision, or a terminal reason")
+    $warnings.Add("docs\progress.md does not contain a concrete next-step signal; before archiving work, add a recommended next step, a full-profile backlog item, a waiting user decision, or a terminal reason")
 }
 
 if ($warnings.Count -gt 0) {

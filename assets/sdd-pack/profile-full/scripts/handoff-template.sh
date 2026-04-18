@@ -117,6 +117,7 @@ printf -- '- [ ] commit status: %s\n' "$commit_status"
 printf -- '- [ ] uncommitted reason: %s\n' "$uncommitted_reason"
 printf -- '- [ ] recommended commit message: %s\n' "$commit_message"
 printf -- '- [ ] recommended next step: %s\n' "$next_action"
+printf -- '- [ ] backlog item: \n'
 printf -- '- [ ] waiting on user decision: \n'
 printf -- '- [ ] no next step because: \n'
 printf -- '- [x] git status snapshot:\n'

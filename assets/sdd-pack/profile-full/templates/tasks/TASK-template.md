@@ -62,6 +62,7 @@ Run the smallest useful checks first.
 - [ ] recommended commit message:
 - [ ] next active task:
 - [ ] recommended next step:
+- [ ] backlog item:
 - [ ] no next step because:
 
 ## Output Format For Subagent

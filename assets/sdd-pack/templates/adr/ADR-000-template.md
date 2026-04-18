@@ -2,7 +2,7 @@
 
 ## Status
 
-- proposed / accepted / superseded / deprecated
+- [ ] status: proposed / accepted / superseded / deprecated
 
 ## Context
 
@@ -28,4 +28,3 @@ State the decision in plain language.
 - task card:
 - related PR or commit:
 - related docs:
-

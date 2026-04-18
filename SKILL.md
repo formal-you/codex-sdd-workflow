@@ -56,7 +56,7 @@ Default to `lite` when the user has not said they want broader agile or delivery
 Before marking a task or subtask done, or before archiving it, ensure one of these exists:
 
 - a new active task under `tasks/active/`
-- a `Next Options` / `Recommended Next Step` entry in `docs/progress.md`
+- a `recommended next step` entry in `docs/progress.md`
 - a backlog item when the generated workflow uses the `full` profile
 
 If no recommendation is possible, record the waiting user decision, candidate options, and the recommended default in `docs/progress.md`.

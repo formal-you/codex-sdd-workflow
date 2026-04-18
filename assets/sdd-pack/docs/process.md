@@ -1,37 +1,29 @@
 # Process
 
-Use this file as the long-lived process summary. It complements `progress.md` instead of replacing it.
+Use this file for the long-lived project view and archive index. Current execution state and handoff belong in `progress.md`.
 
 Use `[ ]` for unfinished, pending, or unconfirmed items. Use `[x]` for completed or confirmed items.
 
-## Current Focus
+## Macro Focus
 
-- [ ] active task: `tasks/active/TASK-XXX-sample.md`
-- [ ] current theme:
-- [ ] current judgment:
+- [ ] milestone:
+- [ ] core focus:
 
-## Current Board
+## Rules of Archiving
 
-- [ ] active parent tasks:
-  - [ ] `tasks/active/TASK-XXX-sample.md`
-- [ ] active subtasks:
-  - [ ] none
+- [x] Keep current execution state in `progress.md`.
+- [x] When a task is complete, move it to `tasks/history/`, then add one short archive line here.
+- [x] Before archiving work, leave a concrete handoff action in `progress.md`.
 
-## Recently Completed
+## Recent History
 
-- [ ] `tasks/history/TASK-XXX-sample.md`
-  - [ ] one or two lines summarizing what finished
+> Keep only the most important recent archive notes here.
 
-## Archiving Rules
+- [ ] `tasks/history/TASK-001.md` - finished the core API migration
 
-- [x] `progress.md` is for current-state tracking and handoff, not full history
-- [x] when a task or subtask is done and no longer active, move it into `tasks/history/`
-- [x] before archiving, leave a next-step entry in `progress.md`, create the next active task, or capture a backlog item in the full profile
-- [x] after archiving, add a short note here
-- [x] start a new session by reading this file before `progress.md`
+## Pointers
 
-## History Summary
-
-- [ ] history directory: `tasks/history/`
-- [ ] active directory: `tasks/active/`
-- [ ] template directory: `templates/tasks/`
+- [ ] active tasks: `tasks/active/`
+- [ ] archived tasks: `tasks/history/`
+- [ ] architecture decisions: `adr/records/`
+- [ ] validation evidence: `evidence/records/`

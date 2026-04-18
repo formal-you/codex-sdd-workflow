@@ -69,4 +69,4 @@ fi
 mv "$source_path" "$destination_path"
 echo "已归档 $destination_path"
 echo "请同步更新 docs/process.md 与 docs/progress.md"
-echo "进入下一次会话前，请留下下一步入口：新的 active task、progress.md 的下一步选项推荐，或 full profile 下的 backlog 条目。"
+echo "进入下一次会话前，请留下下一步入口：新的 active task、progress.md 的推荐下一步，或 full profile 下的 backlog 条目。"

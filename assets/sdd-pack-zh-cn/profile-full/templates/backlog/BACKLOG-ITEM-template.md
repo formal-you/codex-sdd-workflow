@@ -11,9 +11,9 @@
 
 ## Definition Of Ready
 
-1. scope 已经足够清楚
-2. 验收信号明确
-3. owner 或下一位 reviewer 明确
+- [ ] scope 已经足够清楚
+- [ ] 验收信号明确
+- [ ] owner 或下一位 reviewer 明确
 
 ## 链接
 

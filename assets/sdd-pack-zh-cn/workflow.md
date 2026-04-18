@@ -60,13 +60,13 @@
 
 ## 进度与归档规则
 
-- `docs/process.md` 是长期流程摘要，记录当前焦点、active tasks、近期完成和归档规则
-- `docs/progress.md` 是当前实现阶段的工作摘要和 handoff 记录，不承载整个项目的完整历史
+- `docs/process.md` 是长期项目视角，记录 milestone、归档规则、近期历史和目录指针
+- `docs/progress.md` 是短时状态追踪与 Session Handoff，不承担 task board 或完整项目历史
 - workflow 状态文档里，用 `[ ]` 表示未完成、待推进或待确认，用 `[x]` 表示已完成或已确认
 - 当某个 task 或 subtask 已完成且不再活跃时，把它从 `tasks/active/` 移入 `tasks/history/`
-- 归档前，必须留下一个 next-step entry：新的 active task、`docs/progress.md` 中的“下一步选项 / 推荐下一步”，或 full profile 下的 backlog item
-- 如果暂时无法推荐下一步，在 `docs/progress.md` 写清楚等待用户决策、候选项和推荐默认项
-- 归档后，在 `docs/process.md` 中更新“近期完成”或“历史摘要”，并明确当前 active task
+- 归档前，必须留下一个 next-step entry：`docs/progress.md` 中的“推荐的下一步明确动作”，或 full profile 下的 backlog 条目
+- 如果暂时无法推荐下一步，在 `docs/progress.md` 写清楚等待用户决策或终态原因
+- 归档后，在 `docs/process.md` 中更新近期归档摘要
 
 ## Git Workflow
 

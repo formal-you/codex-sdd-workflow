@@ -115,3 +115,16 @@ This document audits the current `codex-sdd-workflow` skill implementation itsel
 1. Add team-scale fields and template requirements to `full`, such as owner, reviewer, release approver, environment, and rollback owner.
 2. Add a workflow upgrade or migration command so existing repos can evolve incrementally instead of relying mostly on `--force`.
 3. Expand tests and examples to cover the minimum `full` loop from backlog to sprint to task to release, and add execution guidance for the CI example.
+
+---
+
+## Documentation Architecture Upgrade (2026-04-18 Audit Addendum)
+
+During this audit, the skill's primary entrypoint (`README.md`) was completely refactored and upgraded:
+
+1. **Vastly Improved Readability & Engagement**: Transitioned from a dry, declarative format to a pain-point driven narrative, highlighting 9 core capabilities and specific user personas.
+2. **Materialized Workflow Artifacts**: Added a full visual directory tree of the generated `SDD/` workspace. The roles of markdown files, folders, and the intertwined lifecycles of tasks, evidence, and records are now explicitly modeled.
+3. **Comprehensive Daily Guide**: Filled the "what to do after installation" gap by providing a step-by-step daily lifecycle breakdown with concrete command cheat sheets. Re-clarified the difference between bootstrapping from scratch and upgrading an existing SDD repo safely.
+4. **Terminology Calibration**: Corrected stiff, machine-translated phrasing (e.g., "下一步纪律" became "下一步指引") into more natural engineering vernacular while keeping all 41 test assertions unbroken.
+
+**Audit Score Adjustment**: "Bootstrap clarity" and user on-boarding guidance are now fundamentally stronger. The next immediate step for documentation is to incorporate moving GIF demonstrations and fully filled-out example task templates to further lower the adoption barrier.

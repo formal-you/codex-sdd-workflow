@@ -1,17 +1,16 @@
-# TASK-XXX: Short Task Name
+# SUBTASK-XXX: Short Subtask Name
 
 ## Status
 
 - [ ] draft / ready / in_progress / blocked / done
 
+## Parent Task
+
+- [ ] parent task: `tasks/active/TASK-XXX-parent-task.md`
+
 ## Objective
 
-State the change in one or two sentences.
-
-## Why
-
-- [ ] user impact:
-- [ ] technical reason:
+State the delegated slice in one or two sentences.
 
 ## Required Context
 
@@ -19,15 +18,7 @@ State the change in one or two sentences.
 - [ ] relevant code paths:
 - [ ] assumptions already checked:
 
-## Decomposition Decision
-
-- [ ] decomposition decision: single_task / parallel_subtasks / sequential_subtasks
-- [ ] parallelization candidate: yes / no
-- [ ] integration owner: main agent
-- [ ] subtask links:
-  - [ ] none
-
-## Editable Scope
+## Owned Scope
 
 Only these files or modules may be changed:
 
@@ -35,22 +26,23 @@ Only these files or modules may be changed:
 
 ## Do Not Touch
 
+- [ ] files owned by sibling subtasks
 - [ ] unrelated modules
-- [ ] build or deployment config unless explicitly required
-- [ ] generated files unless regeneration is part of acceptance
-- [ ] user changes outside the owned scope
+- [ ] generated files unless regeneration is required
+- [ ] user changes outside the assigned scope
+
+## Dependencies
+
+- [ ] dependency:
 
 ## Acceptance Criteria
 
 - [ ] behavior passes:
 - [ ] regression protection passes:
-- [ ] docs or config updates are complete:
+- [ ] handoff notes for the main agent are recorded:
 
 ## Verification
 
-Run the smallest useful checks first.
-
-- [ ] command:
 - [ ] command:
 
 ## Completion Handoff
@@ -62,18 +54,14 @@ Run the smallest useful checks first.
 - [ ] recommended commit message:
 - [ ] next active task:
 - [ ] recommended next step:
+- [ ] backlog item:
 - [ ] no next step because:
 
-## Output Format For Subagent
+## Output Format
 
 Return:
 
 1. files changed
 2. summary of behavior change
 3. tests and results
-4. remaining risks or follow-ups
-
-## Notes
-
-- [ ] caveat:
-- [ ] open question:
+4. remaining risks or assumptions

@@ -88,8 +88,7 @@ Always fill these first:
 
 Before finishing or archiving a task, leave one next-step signal:
 
-- a new active task
-- a `Next Options` / `recommended next step` entry in `SDD/docs/progress.md`
+- a `recommended next step` entry in `SDD/docs/progress.md`
 - a backlog item when using `full`
 - or a clear waiting user decision / terminal reason
 

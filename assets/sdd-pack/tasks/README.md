@@ -33,7 +33,7 @@ Use `TASK-*.md` for parent tasks and `SUBTASK-*.md` for delegated slices. Parent
 
 - keep in-progress work in `active/`
 - move completed work into `history/`
-- after archiving, refresh the short summary in `../docs/process.md`
+- after archiving, refresh the recent history summary in `../docs/process.md`
 
 ## Full Profile Note
 

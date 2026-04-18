@@ -54,6 +54,7 @@
 - [ ] 推荐 commit message：
 - [ ] 下一步 active task：
 - [ ] 推荐下一步：
+- [ ] backlog 条目：
 - [ ] 无需下一步原因：
 
 ## 输出格式

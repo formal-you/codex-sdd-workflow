@@ -118,23 +118,26 @@ fi
 
 legacy_active_task_label="活跃""任务"
 placeholder_patterns=(
+  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*总体进度或阶段：[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*一句话总结已填写[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*用一句话描述这个产品或系统：[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*这个项目要解决什么痛点？[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*目标 1：[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*项目状态：[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*$legacy_active_task_label：[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*当前 active task：\`tasks/active/TASK-XXX-sample\\.md\`[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*当前主题：[[:space:]]*$"
+  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*当前 Active Task：\`tasks/active/TASK-XXX\\.md\`[[:space:]]*$"
+  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*Git 分支与状态：[[:space:]]*$"
+  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*\\[YYYY-MM-DD\\][[:space:]]*发现：[[:space:]]*$"
+  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*\\[YYYY-MM-DD\\][[:space:]]*结论：[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*问题：[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*拆分状态：[[:space:]]*$"
+  "^[[:space:]]*-[[:space:]]*\\[[[:space:]]\\][[:space:]]*集成状态：[[:space:]]*$"
   "^[[:space:]]*Describe the product or system in one sentence\\.[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*What pain does this project solve\\?[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*Goal 1:[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*project state:[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*active task:[[:space:]]*$"
   "^[[:space:]]*-[[:space:]]*Question:[[:space:]]*$"
-  "^[[:space:]]*-[[:space:]]*decomposition status:[[:space:]]*$"
+  "^[[:space:]]*-[[:space:]]*integration status:[[:space:]]*$"
 )
 
 missing=()
@@ -147,7 +150,7 @@ has_next_step_signal() {
   {
     line=$0
     sub(/^[[:space:]]*-[[:space:]]*(\[[ xX]\][[:space:]]*)?/, "", line)
-    if (line ~ /^(recommended next step|next active task|backlog item|waiting on user decision|no next step because|推荐下一步|下一步 active task|backlog 条目|等待用户决策|无需下一步原因):[[:space:]]*[^[:space:]]/) {
+    if (line ~ /^(recommended next step|next active task|backlog item|waiting on user decision|no next step because|推荐下一步|推荐的下一步明确动作|下一步 active task|backlog 条目|等待用户决策|无需下一步原因):[[:space:]]*[^[:space:]]/) {
       value=line
       sub(/^[^:：]+[:：][[:space:]]*/, "", value)
       if (value !~ /^(none|n\/a|N\/A|无)$/ && value !~ /(TASK-XXX|BACKLOG-XXX|sample)/) {
@@ -247,7 +250,7 @@ for path in "$root"/tasks/active/TASK-*.md "$root"/tasks/active/SUBTASK-*.md "$r
 done
 
 if ! has_next_step_signal; then
-  warnings+=("docs/progress.md 还没有具体下一步信号；归档前请补充下一步 active task、下一步选项推荐、full profile backlog 条目、等待用户决策，或终态原因")
+  warnings+=("docs/progress.md 还没有具体下一步信号；归档前请补充推荐的下一步明确动作、full profile backlog 条目、等待用户决策，或终态原因")
 fi
 
 if (( ${#warnings[@]} > 0 )); then

@@ -18,11 +18,11 @@ Use this folder as the durable memory layer for the repository.
 ## File Roles
 
 - `project-brief.md`: product, users, goals, constraints
-- `process.md`: long-lived process summary, current task pointer, archive digest
+- `process.md`: long-lived process view, archive digest, and directory pointers
 - `architecture.md`: module map, ownership, risky areas
 - `testing.md`: commands and quality gates
 - `git-workflow.md`: branch naming, commit conventions, PR readiness
-- `progress.md`: current implementation state and handoff
+- `progress.md`: short-lived state tracking and session handoff
 - `workflow-audit.md`: scorecard and findings from validating the workflow itself
 
 ## Full Profile Additions

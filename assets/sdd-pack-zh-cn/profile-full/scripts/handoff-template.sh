@@ -94,7 +94,7 @@ printf -- '- [x] branch: %s\n' "$branch"
 printf -- '- [x] git scope: %s\n' "$git_scope"
 printf -- '- [ ] active task: %s\n' "$current_task"
 
-printf -- '- [ ] files touched:\n'
+printf -- '- [ ] 涉及文件:\n'
 if (( ${#files_touched[@]} > 0 )); then
   for item in "${files_touched[@]}"; do
     printf -- '  - [ ] %s\n' "$item"
@@ -103,7 +103,7 @@ else
   printf -- '  - [ ] \n'
 fi
 
-printf -- '- [ ] commands run:\n'
+printf -- '- [ ] 执行命令:\n'
 if (( ${#commands_run[@]} > 0 )); then
   for item in "${commands_run[@]}"; do
     printf -- '  - [ ] %s\n' "$item"
@@ -112,18 +112,19 @@ else
   printf -- '  - [ ] \n'
 fi
 
-printf -- '- [ ] open risk or blocker: %s\n' "$risk"
+printf -- '- [ ] 未解决风险或 blocker：%s\n' "$risk"
 printf -- '- [ ] commit status: %s\n' "$commit_status"
-printf -- '- [ ] uncommitted reason: %s\n' "$uncommitted_reason"
-printf -- '- [ ] recommended commit message: %s\n' "$commit_message"
-printf -- '- [ ] recommended next step: %s\n' "$next_action"
-printf -- '- [ ] waiting on user decision: \n'
-printf -- '- [ ] no next step because: \n'
-printf -- '- [x] git status snapshot:\n'
+printf -- '- [ ] 未提交原因: %s\n' "$uncommitted_reason"
+printf -- '- [ ] 推荐 commit message: %s\n' "$commit_message"
+printf -- '- [ ] 推荐的下一步明确动作：%s\n' "$next_action"
+printf -- '- [ ] backlog 条目：\n'
+printf -- '- [ ] 等待用户决策：\n'
+printf -- '- [ ] 无需下一步原因：\n'
+printf -- '- [x] git 状态快照:\n'
 if [[ -n "$git_status" ]]; then
   while IFS= read -r line; do
     printf -- '  - [x] %s\n' "$line"
   done <<< "$git_status"
 else
-  printf -- '  - [x] clean or unavailable\n'
+  printf -- '  - [x] 工作区干净或 git 不可用\n'
 fi

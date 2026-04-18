@@ -81,11 +81,13 @@ if ($CommandsRun.Count -gt 0) {
     Write-Output "  - [ ] "
 }
 
-Write-Output "- [ ] 未解决风险: $Risk"
+Write-Output "- [ ] 未解决风险或 blocker：$Risk"
 Write-Output "- [ ] commit status: $CommitStatus"
 Write-Output "- [ ] 未提交原因: $UncommittedReason"
 Write-Output "- [ ] 推荐 commit message: $CommitMessage"
-Write-Output "- [ ] 推荐下一步: $NextAction"
+Write-Output "- [ ] 推荐的下一步明确动作：$NextAction"
+Write-Output "- [ ] 等待用户决策："
+Write-Output "- [ ] 无需下一步原因："
 Write-Output "- [x] git 状态快照:"
 if ($gitStatus.Count -gt 0) {
     foreach ($line in $gitStatus) {

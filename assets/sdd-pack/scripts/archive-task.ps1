@@ -35,4 +35,4 @@ if ($DryRun) {
 Move-Item -LiteralPath $sourcePath -Destination $destinationPath -Force
 Write-Host "Archived $destinationPath"
 Write-Host "Remember to update docs/process.md and docs/progress.md"
-Write-Host "Before the next session, leave a next-step entry: a new active task, a progress.md Next Options recommendation, or a full-profile backlog item."
+Write-Host "Before the next session, leave a next-step entry: a new active task, a progress.md recommended next step, or a full-profile backlog item."

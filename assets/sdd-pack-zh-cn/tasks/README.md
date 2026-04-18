@@ -33,7 +33,7 @@ Task cards 让工作在以下场景中仍然可继续：
 
 - 仍在推进中的任务保留在 `active/`
 - 已完成且不再作为当前焦点的任务移入 `history/`
-- 归档后，把长期摘要更新到 `../docs/process.md`
+- 归档后，把近期归档摘要更新到 `../docs/process.md`
 
 ## Full Profile 说明
 

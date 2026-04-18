@@ -28,6 +28,7 @@ Use `[ ]` for unfinished, pending, or unconfirmed items. Use `[x]` for completed
 - [ ] uncommitted reason:
 - [ ] recommended commit message:
 - [ ] recommended next step:
+- [ ] backlog item:
 - [ ] waiting on user decision:
 - [ ] no next step because:
 

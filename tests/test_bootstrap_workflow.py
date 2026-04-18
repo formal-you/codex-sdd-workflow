@@ -166,10 +166,18 @@ class BootstrapWorkflowTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
 
             config = Path(tmpdir, "SDD", "workflow-config.env").read_text(encoding="utf-8")
+            progress = Path(tmpdir, "SDD", "docs", "progress.md").read_text(encoding="utf-8")
+            task_template = Path(tmpdir, "SDD", "templates", "tasks", "TASK-template.md").read_text(encoding="utf-8")
+            subtask_template = Path(tmpdir, "SDD", "templates", "tasks", "SUBTASK-template.md").read_text(encoding="utf-8")
+            handoff_script = Path(tmpdir, "SDD", "scripts", "handoff-template.sh").read_text(encoding="utf-8")
             self.assertIn("WORKFLOW_PROFILE=lite", config)
             self.assertIn("TASK_COMPLETION_GIT_MODE=manual", config)
             self.assertFalse(Path(tmpdir, "SDD", "docs", "agile-delivery.md").exists())
             self.assertFalse(Path(tmpdir, "SDD", "scripts", "new-sprint.sh").exists())
+            self.assertNotIn("backlog item:", progress)
+            self.assertNotIn("backlog item:", task_template)
+            self.assertNotIn("backlog item:", subtask_template)
+            self.assertNotIn("backlog item:", handoff_script)
 
     def test_full_profile_generates_agile_and_automation_assets(self) -> None:
         bash = bash_executable()
@@ -243,27 +251,60 @@ class BootstrapWorkflowTests(unittest.TestCase):
             backlog_template = Path(tmpdir, "SDD", "templates", "backlog", "BACKLOG-ITEM-template.md").read_text(encoding="utf-8")
             sprint_template = Path(tmpdir, "SDD", "templates", "sprints", "SPRINT-template.md").read_text(encoding="utf-8")
             release_template = Path(tmpdir, "SDD", "templates", "releases", "RELEASE-template.md").read_text(encoding="utf-8")
+            evidence_template = Path(tmpdir, "SDD", "templates", "evidence", "EVIDENCE-000-template.md").read_text(encoding="utf-8")
+            adr_template = Path(tmpdir, "SDD", "templates", "adr", "ADR-000-template.md").read_text(encoding="utf-8")
+            handoff_script = Path(tmpdir, "SDD", "scripts", "handoff-template.sh").read_text(encoding="utf-8")
             git_workflow = Path(tmpdir, "SDD", "docs", "git-workflow.md").read_text(encoding="utf-8")
             testing_doc = Path(tmpdir, "SDD", "docs", "testing.md").read_text(encoding="utf-8")
             root_agents = Path(tmpdir, "AGENTS.md").read_text(encoding="utf-8")
 
             self.assertIn("Use `[ ]` for unfinished", progress)
-            self.assertIn("## Next Options", progress)
+            self.assertIn("## Current", progress)
+            self.assertIn("## Recent Findings", progress)
+            self.assertIn("## Session Handoff", progress)
+            self.assertIn("## Concurrency", progress)
             self.assertIn("- [ ] recommended next step:", progress)
+            self.assertIn("- [ ] backlog item:", progress)
             self.assertIn("- [ ] waiting on user decision:", progress)
-            self.assertIn("## Git Closure", progress)
             self.assertIn("- [ ] commit status: not committed / committed", progress)
-            self.assertIn("before archiving, leave a next-step entry", process)
+            self.assertNotIn("## Current Context", progress)
+            self.assertNotIn("## Next Options", progress)
+            self.assertNotIn("## Active Task Cards", progress)
+            self.assertIn("## Macro Focus", process)
+            self.assertIn("## Rules of Archiving", process)
+            self.assertIn("## Recent History", process)
+            self.assertIn("## Pointers", process)
+            self.assertNotIn("## Current Focus", process)
+            self.assertIn("Before archiving work, leave a concrete handoff action", process)
+            self.assertIn("- [ ] validation target:", evidence_template)
+            self.assertIn("- [ ] command:", evidence_template)
+            self.assertIn("- [ ] expected result:", evidence_template)
+            self.assertIn("- [ ] finding:", evidence_template)
+            self.assertIn("- [ ] change:", evidence_template)
+            self.assertIn("- [ ] validation result: pass / fail / partial", evidence_template)
             self.assertIn("## Completion Handoff", task_template)
             self.assertIn("- [ ] recommended next step:", task_template)
             self.assertIn("- [ ] commit mode: manual / auto", task_template)
             self.assertIn("- [ ] uncommitted reason:", task_template)
             self.assertIn("- [ ] recommended commit message:", task_template)
+            self.assertIn("- [ ] behavior passes:", task_template)
+            self.assertIn("- [ ] regression protection passes:", task_template)
+            self.assertIn("- [ ] backlog item:", task_template)
+            self.assertNotIn("1. behavior:", task_template)
             self.assertIn("## Completion Handoff", subtask_template)
             self.assertIn("- [ ] commit status: not committed / committed", subtask_template)
+            self.assertIn("- [ ] behavior passes:", subtask_template)
+            self.assertIn("- [ ] backlog item:", subtask_template)
+            self.assertNotIn("1. behavior:", subtask_template)
             self.assertIn("- [ ] candidate next step:", backlog_template)
+            self.assertIn("- [ ] scope is understandable", backlog_template)
+            self.assertNotIn("1. scope is understandable", backlog_template)
             self.assertIn("## Next Options", sprint_template)
             self.assertIn("## Next Options", release_template)
+            self.assertIn("- [ ] CI checks:", release_template)
+            self.assertNotIn("1. CI checks:", release_template)
+            self.assertIn("- [ ] status: proposed / accepted / superseded / deprecated", adr_template)
+            self.assertIn("- [ ] backlog item: ", handoff_script)
             self.assertIn("## Task Completion Git Closure", git_workflow)
             self.assertIn("TASK_COMPLETION_GIT_MODE", git_workflow)
             self.assertIn("Git closure is documented", testing_doc)
@@ -274,24 +315,65 @@ class BootstrapWorkflowTests(unittest.TestCase):
             self.assertEqual(zh_result.returncode, 0, zh_result.stderr)
 
             progress = Path(tmpdir, "SDD", "docs", "progress.md").read_text(encoding="utf-8")
+            process = Path(tmpdir, "SDD", "docs", "process.md").read_text(encoding="utf-8")
             task_template = Path(tmpdir, "SDD", "templates", "tasks", "TASK-template.md").read_text(encoding="utf-8")
+            subtask_template = Path(tmpdir, "SDD", "templates", "tasks", "SUBTASK-template.md").read_text(encoding="utf-8")
             backlog_template = Path(tmpdir, "SDD", "templates", "backlog", "BACKLOG-ITEM-template.md").read_text(encoding="utf-8")
+            evidence_template = Path(tmpdir, "SDD", "templates", "evidence", "EVIDENCE-000-template.md").read_text(encoding="utf-8")
+            release_template = Path(tmpdir, "SDD", "templates", "releases", "RELEASE-template.md").read_text(encoding="utf-8")
+            adr_template = Path(tmpdir, "SDD", "templates", "adr", "ADR-000-template.md").read_text(encoding="utf-8")
+            handoff_script = Path(tmpdir, "SDD", "scripts", "handoff-template.sh").read_text(encoding="utf-8")
             git_workflow = Path(tmpdir, "SDD", "docs", "git-workflow.md").read_text(encoding="utf-8")
             testing_doc = Path(tmpdir, "SDD", "docs", "testing.md").read_text(encoding="utf-8")
             root_agents = Path(tmpdir, "AGENTS.md").read_text(encoding="utf-8")
 
             self.assertIn("用 `[ ]` 标记", progress)
-            self.assertIn("- [ ] 交付信心：", progress)
-            self.assertIn("## 下一步选项", progress)
-            self.assertIn("- [ ] 推荐下一步：", progress)
+            self.assertIn("## Current", progress)
+            self.assertIn("## Recent Findings", progress)
+            self.assertIn("## Session Handoff", progress)
+            self.assertIn("## Concurrency", progress)
+            self.assertIn("- [ ] 推荐的下一步明确动作：", progress)
+            self.assertIn("- [ ] backlog 条目：", progress)
             self.assertIn("- [ ] 等待用户决策：", progress)
-            self.assertIn("## Git handoff", progress)
-            self.assertIn("## Blockers", progress)
             self.assertIn("- [ ] commit status：未提交 / 已提交", progress)
+            self.assertNotIn("## 当前上下文", progress)
+            self.assertNotIn("## 下一步选项", progress)
+            self.assertNotIn("## 协作区", progress)
+            self.assertIn("## Macro Focus", process)
+            self.assertIn("## Rules of Archiving", process)
+            self.assertIn("## Recent History", process)
+            self.assertIn("## Pointers", process)
+            self.assertNotIn("## Current Focus", process)
+            self.assertIn("- [ ] 验证目标：", evidence_template)
+            self.assertIn("- [ ] command：", evidence_template)
+            self.assertIn("- [ ] 预期结果应该是：", evidence_template)
+            self.assertIn("- [ ] 实际看到现象是 (Finding)：", evidence_template)
+            self.assertIn("- [ ] 根据刚才的发现做出的代码补充 (Change)：", evidence_template)
+            self.assertIn("- [ ] 验证结论：pass / fail / partial", evidence_template)
             self.assertIn("## Completion Handoff", task_template)
-            self.assertIn("- [ ] 未提交原因：", task_template)
+            self.assertIn("## 1. 目标与背景 (Context)", task_template)
+            self.assertIn("## 2. 操作沙盒 (Owned Scope)", task_template)
+            self.assertIn("## 3. 执行策略 (Execution Plan)", task_template)
+            self.assertIn("## 4. 验收标准 (Acceptance Criteria)", task_template)
+            self.assertIn("## 5. 验证记录 (Verification)", task_template)
+            self.assertIn("- [ ] 行为指标：当 [执行某操作] 时，预期结果是 [产生某行为]", task_template)
+            self.assertIn("- [ ] 架构合规：改动未违背 `AGENTS.md` 及全局规范", task_template)
+            self.assertIn("- [ ] 回归防御：确保原有的 [某核心业务] 没有受到破坏", task_template)
+            self.assertIn("- [ ] 未提交原因 (如果是 manual 模式)：", task_template)
             self.assertIn("- [ ] 推荐 commit message：", task_template)
+            self.assertIn("- [ ] 推荐的下一步排期 (Next Task)：", task_template)
+            self.assertIn("- [ ] 对应 evidence：", task_template)
+            self.assertIn("- [ ] backlog 条目：", task_template)
+            self.assertIn("- [ ] 行为通过：", subtask_template)
+            self.assertIn("- [ ] backlog 条目：", subtask_template)
+            self.assertNotIn("1. 行为：", subtask_template)
             self.assertIn("- [ ] 候选下一步：", backlog_template)
+            self.assertIn("- [ ] scope 已经足够清楚", backlog_template)
+            self.assertNotIn("1. scope 已经足够清楚", backlog_template)
+            self.assertIn("- [ ] CI checks：", release_template)
+            self.assertNotIn("1. CI checks：", release_template)
+            self.assertIn("- [ ] status: proposed / accepted / superseded / deprecated", adr_template)
+            self.assertIn("- [ ] backlog 条目：", handoff_script)
             self.assertIn("## Task Completion Git Handoff", git_workflow)
             self.assertIn("Git handoff 已记录", testing_doc)
             self.assertIn("Git handoff 已记录", root_agents)
@@ -648,6 +730,7 @@ class BootstrapWorkflowTests(unittest.TestCase):
             self.assertIn("- [ ] commit status: not committed", result.stdout)
             self.assertIn("- [ ] uncommitted reason: manual mode", result.stdout)
             self.assertIn("- [ ] recommended commit message: chore: test handoff", result.stdout)
+            self.assertNotIn("backlog item:", result.stdout)
 
     def test_shell_handoff_reports_repo_scope_changes(self) -> None:
         bash = bash_executable()
@@ -680,8 +763,9 @@ class BootstrapWorkflowTests(unittest.TestCase):
             self.assertIn("- [ ] commit status: not committed", result.stdout)
             self.assertIn("- [ ] uncommitted reason: manual mode", result.stdout)
             self.assertIn("- [ ] recommended commit message: chore: test handoff", result.stdout)
+            self.assertNotIn("backlog item:", result.stdout)
 
-    def test_session_brief_prefers_next_options_section(self) -> None:
+    def test_session_brief_prefers_current_handoff_and_keeps_legacy_fallback(self) -> None:
         powershell = powershell_executable()
         if not powershell:
             self.skipTest("PowerShell is not available")
@@ -693,10 +777,19 @@ class BootstrapWorkflowTests(unittest.TestCase):
             progress = Path(tmpdir, "SDD", "docs", "progress.md")
             progress.write_text(
                 "# Progress\n\n"
-                "## Git Closure\n\n"
-                "- [ ] commit status: not committed\n\n"
-                "## Next Options\n\n"
+                "## Current\n\n"
+                "- [ ] current phase: focused validation\n\n"
+                "## Recent Findings\n\n"
+                "- [ ] [2026-04-19] finding: reproduced the parser issue\n\n"
+                "## Session Handoff\n\n"
+                "- [ ] commit status: not committed\n"
                 "- [ ] recommended next step: run the focused regression\n\n"
+                "## Concurrency\n\n"
+                "- [ ] integration status: single_task\n\n"
+                "## Git Closure\n\n"
+                "- [ ] commit status: legacy not committed\n\n"
+                "## Next Options\n\n"
+                "- [ ] recommended next step: legacy fallback\n\n"
                 "## Next\n\n"
                 "- [ ] next action 1: legacy fallback\n",
                 encoding="utf-8",
@@ -720,11 +813,16 @@ class BootstrapWorkflowTests(unittest.TestCase):
 
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("task completion git mode: manual", result.stdout)
-            self.assertIn("## Git Closure", result.stdout)
-            self.assertIn("commit status: not committed", result.stdout)
-            self.assertIn("## Next Options", result.stdout)
+            self.assertIn("## Current", result.stdout)
+            self.assertIn("current phase: focused validation", result.stdout)
+            self.assertIn("## Session Handoff", result.stdout)
             self.assertIn("recommended next step: run the focused regression", result.stdout)
-            self.assertLess(result.stdout.index("## Next Options"), result.stdout.index("## Next\n"))
+            self.assertIn("## Concurrency", result.stdout)
+            self.assertIn("## Git Closure", result.stdout)
+            self.assertIn("commit status: legacy not committed", result.stdout)
+            self.assertIn("## Next Options", result.stdout)
+            self.assertIn("recommended next step: legacy fallback", result.stdout)
+            self.assertLess(result.stdout.index("## Session Handoff"), result.stdout.index("## Next Options"))
 
     def test_zh_session_brief_supports_git_handoff_and_legacy_heading(self) -> None:
         powershell = powershell_executable()
@@ -738,10 +836,19 @@ class BootstrapWorkflowTests(unittest.TestCase):
             progress = Path(tmpdir, "SDD", "docs", "progress.md")
             progress.write_text(
                 "# 进度记录\n\n"
+                "## Current\n\n"
+                "- [ ] 总体进度或阶段：focused validation\n\n"
+                "## Recent Findings\n\n"
+                "- [ ] [2026-04-19] 发现：reproduced the parser issue\n\n"
+                "## Session Handoff\n\n"
+                "- [ ] commit status：未提交\n"
+                "- [ ] 推荐的下一步明确动作：运行 targeted regression\n\n"
+                "## Concurrency\n\n"
+                "- [ ] 集成状态：single_task\n\n"
                 "## Git handoff\n\n"
-                "- [ ] commit status：未提交\n\n"
+                "- [ ] commit status：legacy 未提交\n\n"
                 "## 下一步选项\n\n"
-                "- [ ] 推荐下一步：运行 targeted regression\n",
+                "- [ ] 推荐下一步：legacy fallback\n",
                 encoding="utf-8",
             )
             script_path = Path(tmpdir, "SDD", "scripts", "session-brief.ps1")
@@ -761,8 +868,12 @@ class BootstrapWorkflowTests(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("## Current", result.stdout)
+            self.assertIn("## Session Handoff", result.stdout)
+            self.assertIn("推荐的下一步明确动作：运行 targeted regression", result.stdout)
+            self.assertIn("## Concurrency", result.stdout)
             self.assertIn("## Git handoff", result.stdout)
-            self.assertIn("commit status：未提交", result.stdout)
+            self.assertIn("commit status：legacy 未提交", result.stdout)
 
             legacy_heading = "Git " + "收" + "口"
             progress.write_text(
@@ -833,11 +944,12 @@ class BootstrapWorkflowTests(unittest.TestCase):
         subtask_template = (REPO_ROOT / "assets" / "sdd-pack-zh-cn" / "templates" / "tasks" / "SUBTASK-template.md").read_text(encoding="utf-8")
         self.assertIn("# 测试指南", testing_doc)
         self.assertIn("## Quality Gate", testing_doc)
-        self.assertIn("# Process Summary", process_doc)
-        self.assertIn("active task", progress_doc)
+        self.assertIn("# 流程摘要 (Process Summary)", process_doc)
+        self.assertIn("Active Task", progress_doc)
         self.assertIn("parent task", subtask_template)
         self.assertIn("subtask", subtask_template)
         self.assertIn("## Session Handoff", progress_doc)
+        self.assertIn("## Current", progress_doc)
         self.assertNotIn("# Testing Guide", testing_doc)
         self.assertNotIn("Before claiming a task is done", testing_doc)
         self.assertGreater(len(checked_files), 0)
@@ -900,7 +1012,7 @@ class BootstrapWorkflowTests(unittest.TestCase):
             progress = Path(tmpdir, "SDD", "docs", "progress.md")
             progress.write_text(
                 "# Progress\n\n"
-                "## Next Options\n\n"
+                "## Session Handoff\n\n"
                 "- [ ] recommended next step: create TASK-002 for rollout checks\n",
                 encoding="utf-8",
             )
@@ -931,7 +1043,7 @@ class BootstrapWorkflowTests(unittest.TestCase):
             progress = Path(tmpdir, "SDD", "docs", "progress.md")
             progress.write_text(
                 "# Progress\n\n"
-                "## Next Options\n\n"
+                "## Session Handoff\n\n"
                 "- [ ] recommended next step: prepare release checks\n",
                 encoding="utf-8",
             )

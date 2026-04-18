@@ -2,7 +2,7 @@
 
 ## 状态
 
-- proposed / accepted / superseded / deprecated
+- [ ] status: proposed / accepted / superseded / deprecated
 
 ## 背景
 

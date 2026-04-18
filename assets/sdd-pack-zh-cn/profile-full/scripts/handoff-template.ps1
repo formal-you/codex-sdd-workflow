@@ -63,7 +63,7 @@ Write-Output "- [x] timestamp: $timestamp"
 Write-Output "- [x] branch: $branch"
 Write-Output "- [x] git scope: $gitScope"
 Write-Output "- [ ] active task: $CurrentTask"
-Write-Output "- [ ] files touched:"
+Write-Output "- [ ] 涉及文件:"
 if ($FilesTouched.Count -gt 0) {
     foreach ($item in $FilesTouched) {
         Write-Output "  - [ ] $item"
@@ -72,7 +72,7 @@ if ($FilesTouched.Count -gt 0) {
     Write-Output "  - [ ] "
 }
 
-Write-Output "- [ ] commands run:"
+Write-Output "- [ ] 执行命令:"
 if ($CommandsRun.Count -gt 0) {
     foreach ($item in $CommandsRun) {
         Write-Output "  - [ ] $item"
@@ -81,18 +81,19 @@ if ($CommandsRun.Count -gt 0) {
     Write-Output "  - [ ] "
 }
 
-Write-Output "- [ ] open risk or blocker: $Risk"
+Write-Output "- [ ] 未解决风险或 blocker：$Risk"
 Write-Output "- [ ] commit status: $CommitStatus"
-Write-Output "- [ ] uncommitted reason: $UncommittedReason"
-Write-Output "- [ ] recommended commit message: $CommitMessage"
-Write-Output "- [ ] recommended next step: $NextAction"
-Write-Output "- [ ] waiting on user decision: "
-Write-Output "- [ ] no next step because: "
-Write-Output "- [x] git status snapshot:"
+Write-Output "- [ ] 未提交原因: $UncommittedReason"
+Write-Output "- [ ] 推荐 commit message: $CommitMessage"
+Write-Output "- [ ] 推荐的下一步明确动作：$NextAction"
+Write-Output "- [ ] backlog 条目："
+Write-Output "- [ ] 等待用户决策："
+Write-Output "- [ ] 无需下一步原因："
+Write-Output "- [x] git 状态快照:"
 if ($gitStatus.Count -gt 0) {
     foreach ($line in $gitStatus) {
         Write-Output "  - [x] $line"
     }
 } else {
-    Write-Output "  - [x] clean or unavailable"
+    Write-Output "  - [x] 工作区干净或 git 不可用"
 }

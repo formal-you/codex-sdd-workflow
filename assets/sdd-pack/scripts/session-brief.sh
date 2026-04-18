@@ -61,7 +61,7 @@ printf -- '- timestamp: %s\n' "$timestamp"
 printf -- '- branch: %s\n' "$branch"
 printf -- '- git scope: %s\n\n' "$git_scope"
 
-for heading in "Current Focus" "Current Board" "Recently Completed" "Archiving Rules"; do
+for heading in "Macro Focus" "Rules of Archiving" "Recent History" "Pointers" "Current Focus" "Recent Archives" "Workflow Rules & Index" "Current Board" "Recently Completed" "Archiving Rules"; do
   if [[ -f "$process_path" ]]; then
     body="$(section "$heading" "$process_path")"
     if [[ -n "$body" ]]; then
@@ -70,7 +70,7 @@ for heading in "Current Focus" "Current Board" "Recently Completed" "Archiving R
   fi
 done
 
-for heading in "Current Summary" "Now" "Git Closure" "Next Options" "Next" "Parallel Work Summary" "Blockers"; do
+for heading in "Current" "Recent Findings" "Session Handoff" "Concurrency" "Current Context" "Collaboration" "Current Summary" "Now" "Git Closure" "Next Options" "Next" "Parallel Work Summary" "Blockers"; do
   if [[ -f "$progress_path" ]]; then
     body="$(section "$heading" "$progress_path")"
     if [[ -n "$body" ]]; then

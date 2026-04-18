@@ -112,11 +112,13 @@ else
   printf -- '  - [ ] \n'
 fi
 
-printf -- '- [ ] 未解决风险: %s\n' "$risk"
+printf -- '- [ ] 未解决风险或 blocker：%s\n' "$risk"
 printf -- '- [ ] commit status: %s\n' "$commit_status"
 printf -- '- [ ] 未提交原因: %s\n' "$uncommitted_reason"
 printf -- '- [ ] 推荐 commit message: %s\n' "$commit_message"
-printf -- '- [ ] 推荐下一步: %s\n' "$next_action"
+printf -- '- [ ] 推荐的下一步明确动作：%s\n' "$next_action"
+printf -- '- [ ] 等待用户决策：\n'
+printf -- '- [ ] 无需下一步原因：\n'
 printf -- '- [x] git 状态快照:\n'
 if [[ -n "$git_status" ]]; then
   while IFS= read -r line; do

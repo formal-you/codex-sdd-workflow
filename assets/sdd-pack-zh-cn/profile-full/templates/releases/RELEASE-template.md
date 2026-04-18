@@ -12,9 +12,9 @@
 
 ## Release Checks
 
-1. CI checks：
-2. manual verification：
-3. rollback plan：
+- [ ] CI checks：
+- [ ] manual verification：
+- [ ] rollback plan：
 
 ## 部署
 
