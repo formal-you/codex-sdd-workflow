@@ -181,6 +181,21 @@ class BootstrapCoreTests(BootstrapWorkflowTestCase):
             self.assertIn("- [ ] latest verified summary:", progress)
             self.assertIn("- [ ] branch-aware hot state checked:", progress)
 
+    def test_task_templates_do_not_embed_static_subagent_output_instructions(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result = self.run_bootstrap("--target", tmpdir, "--lang", "en", "--workflow-profile", "full")
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+            workflow_doc = Path(tmpdir, "SDD", "workflow.md").read_text(encoding="utf-8")
+            task_template = Path(tmpdir, "SDD", "templates", "tasks", "TASK-template.md").read_text(encoding="utf-8")
+            subtask_template = Path(tmpdir, "SDD", "templates", "tasks", "SUBTASK-template.md").read_text(encoding="utf-8")
+
+            self.assertIn("use the shared return shape from this workflow", workflow_doc)
+            self.assertNotIn("## Output Format For Subagent", task_template)
+            self.assertNotIn("## Output Format", subtask_template)
+            self.assertNotIn("1. files changed", task_template)
+            self.assertNotIn("1. files changed", subtask_template)
+
     def test_template_overlay_applies_supported_override_and_records_manifest(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir, tempfile.TemporaryDirectory() as overlay_tmpdir:
             overlay_root = Path(overlay_tmpdir)

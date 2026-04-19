@@ -64,15 +64,6 @@ Run the smallest useful checks first.
 - [ ] recommended next step:
 - [ ] no next step because:
 
-## Output Format For Subagent
-
-Return:
-
-1. files changed
-2. summary of behavior change
-3. tests and results
-4. remaining risks or follow-ups
-
 ## Notes
 
 - [ ] caveat:
