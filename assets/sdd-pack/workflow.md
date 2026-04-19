@@ -50,7 +50,6 @@ The repository-level operating contract lives in the root [`AGENTS.md`](../AGENT
 - own one narrow task or subtask
 - stay inside the assigned scope
 - report files changed, tests run, and remaining risks
-- use the shared return shape from this workflow, not ad hoc prose in task cards: files changed, behavior summary, tests and results, remaining risks or follow-ups
 - never take over final integration from the main agent
 
 ## Parallel Work Rules

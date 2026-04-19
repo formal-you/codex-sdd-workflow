@@ -141,12 +141,10 @@ class ZhContentTests(BootstrapWorkflowTestCase):
         self.assertNotIn("Before claiming a task is done", testing_doc)
         self.assertGreater(len(checked_files), 0)
 
-    def test_zh_workflow_keeps_subagent_return_shape_in_workflow_not_task_templates(self) -> None:
-        workflow_doc = (REPO_ROOT / "assets" / "sdd-pack-zh-cn" / "workflow.md").read_text(encoding="utf-8")
+    def test_zh_task_templates_do_not_embed_static_subagent_output_instructions(self) -> None:
         task_template = (REPO_ROOT / "assets" / "sdd-pack-zh-cn" / "templates" / "tasks" / "TASK-template.md").read_text(encoding="utf-8")
         subtask_template = (REPO_ROOT / "assets" / "sdd-pack-zh-cn" / "templates" / "tasks" / "SUBTASK-template.md").read_text(encoding="utf-8")
 
-        self.assertIn("统一遵循本 workflow 的返回格式", workflow_doc)
         self.assertNotIn("## Subagent 输出格式", task_template)
         self.assertNotIn("## 输出格式", subtask_template)
         self.assertNotIn("1. 修改的文件", task_template)
