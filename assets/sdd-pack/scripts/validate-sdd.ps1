@@ -306,7 +306,7 @@ foreach ($task in $concreteTasks) {
     $parallel = ($raw -match "(?im)^-\s*(?:\[[ xX]\]\s*)?decomposition decision:\s*parallel_subtasks\s*$") -or
         ($raw -match "(?im)^-\s*(?:\[[ xX]\]\s*)?parallelization candidate:\s*yes\s*$") -or
         ($raw -match "(?im)^-\s*(?:\[[ xX]\]\s*)?拆分决策[:：]\s*parallel_subtasks\s*$")
-    $hasSubtaskLink = $raw -match "(?im)tasks/(?:active/)?SUBTASK-\d{3}.*\.md"
+    $hasSubtaskLink = $raw -match "(?im)tasks/(?:active/)?SUBTASK-\d{3}-\d{2}.*\.md"
     if ($parallel -and -not $hasSubtaskLink) {
         $warnings.Add("$($task.Name) is marked for parallel work but does not link any subtasks")
     }

@@ -302,7 +302,7 @@ shopt -s nullglob
 for path in "$root"/tasks/active/TASK-*.md; do
   task_count=$((task_count + 1))
   if grep -Eiq '^-[[:space:]]*(\[[ xX]\][[:space:]]*)?decomposition decision:[[:space:]]*parallel_subtasks[[:space:]]*$|^-[[:space:]]*(\[[ xX]\][[:space:]]*)?parallelization candidate:[[:space:]]*yes[[:space:]]*$|^-[[:space:]]*(\[[ xX]\][[:space:]]*)?拆分决策[:：][[:space:]]*parallel_subtasks[[:space:]]*$' "$path"; then
-    if ! grep -Eq 'tasks/(active/)?SUBTASK-[0-9]{3}.*\.md' "$path"; then
+    if ! grep -Eq 'tasks/(active/)?SUBTASK-[0-9]{3}-[0-9]{2}.*\.md' "$path"; then
       warnings+=("$(basename "$path") is marked for parallel work but does not link any subtasks")
     fi
   fi

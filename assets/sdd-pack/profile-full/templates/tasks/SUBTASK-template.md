@@ -1,4 +1,4 @@
-# SUBTASK-XXX: Short Subtask Name
+# SUBTASK-XXX-YY: Short Subtask Name
 
 ## Status
 

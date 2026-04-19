@@ -61,6 +61,11 @@ if [[ -z "$slug" ]]; then
   slug="subtask"
 fi
 
+parent_id="000"
+if [[ "$parent_task" =~ TASK-([0-9]{3}) ]]; then
+  parent_id="${BASH_REMATCH[1]}"
+fi
+
 while ! mkdir "$lock_dir" 2>/dev/null; do
   sleep 0.1
 done
@@ -68,9 +73,9 @@ trap 'rmdir "$lock_dir" 2>/dev/null || true' EXIT
 
 max_id=0
 shopt -s nullglob
-for path in "$active_dir"/SUBTASK-*.md; do
+for path in "$active_dir"/SUBTASK-${parent_id}-*.md; do
   name="$(basename "$path")"
-  if [[ "$name" =~ ^SUBTASK-([0-9]{3})(-.*)?\.md$ ]]; then
+  if [[ "$name" =~ ^SUBTASK-[0-9]{3}-([0-9]{2})(-.*)?\.md$ ]]; then
     current_id=$((10#${BASH_REMATCH[1]}))
     if (( current_id > max_id )); then
       max_id=$current_id
@@ -79,11 +84,12 @@ for path in "$active_dir"/SUBTASK-*.md; do
 done
 
 next_id=$((max_id + 1))
-id="$(printf '%03d' "$next_id")"
-target_path="$active_dir/SUBTASK-$id-$slug.md"
+sub_id="$(printf '%02d' "$next_id")"
+full_id="${parent_id}-${sub_id}"
+target_path="$active_dir/SUBTASK-$full_id-$slug.md"
 
 legacy_parent_label="父""任务"
-rendered="$(awk -v id="$id" -v title="$title" -v parent="$parent_task" -v legacy_parent_label="$legacy_parent_label" '
+rendered="$(awk -v id="$full_id" -v title="$title" -v parent="$parent_task" -v legacy_parent_label="$legacy_parent_label" '
 NR == 1 { print "# SUBTASK-" id ": " title; next }
 $0 == "- draft / ready / in_progress / blocked / done" || $0 == "- [ ] draft / ready / in_progress / blocked / done" { print "- [ ] ready"; next }
 $0 == "- parent task: `tasks/TASK-XXX-parent-task.md`" || $0 == "- parent task: `tasks/active/TASK-XXX-parent-task.md`" || $0 == "- [ ] parent task: `tasks/TASK-XXX-parent-task.md`" || $0 == "- [ ] parent task: `tasks/active/TASK-XXX-parent-task.md`" { print "- [ ] parent task: `" parent "`"; next }

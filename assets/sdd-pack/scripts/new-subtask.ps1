@@ -51,8 +51,13 @@ while ($true) {
 }
 
 try {
-    $existingIds = Get-ChildItem -Path $activeDir -Filter "SUBTASK-*.md" -File -ErrorAction SilentlyContinue | ForEach-Object {
-        if ($_.BaseName -match "^SUBTASK-(\d{3})(?:-|$)") {
+    $parentId = "000"
+    if ($ParentTask -match "TASK-(\d{3})") {
+        $parentId = $matches[1]
+    }
+
+    $existingIds = Get-ChildItem -Path $activeDir -Filter "SUBTASK-${parentId}-*.md" -File -ErrorAction SilentlyContinue | ForEach-Object {
+        if ($_.BaseName -match "^SUBTASK-\d{3}-(\d{2})(?:-|$)") {
             [int]$matches[1]
         }
     }
@@ -63,11 +68,12 @@ try {
         1
     }
 
-    $id = "{0:D3}" -f $nextId
-    $targetPath = Join-Path $activeDir ("SUBTASK-$id-$slug.md")
+    $subId = "{0:D2}" -f $nextId
+    $fullId = "${parentId}-${subId}"
+    $targetPath = Join-Path $activeDir ("SUBTASK-$fullId-$slug.md")
 
     $content = Get-Content -LiteralPath $templatePath -Raw
-    $content = $content -replace "(?m)^# SUBTASK-XXX: .+$", "# SUBTASK-${id}: $Title"
+    $content = $content -replace "(?m)^# SUBTASK-XXX(?:-YY)?: .+$", "# SUBTASK-${fullId}: $Title"
     $content = $content -replace "(?m)^- (?:\[ \] )?draft / ready / in_progress / blocked / done$", "- [ ] ready"
     $content = [regex]::Replace($content, '(?m)^- (?:\[ \] )?parent task: `tasks/(?:active/)?TASK-XXX-parent-task\.md`$', ('- [ ] parent task: `{0}`' -f $ParentTask))
 

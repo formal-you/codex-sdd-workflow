@@ -1,4 +1,4 @@
-# SUBTASK-XXX: 简短 subtask 名
+# SUBTASK-XXX-YY: 简短 subtask 名
 
 ## 状态
 

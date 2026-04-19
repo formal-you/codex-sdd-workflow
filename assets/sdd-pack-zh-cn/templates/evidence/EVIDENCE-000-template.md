@@ -2,6 +2,7 @@
 
 ## 目标
 
+- [ ] 关联任务 (Upstream Task)：`tasks/active/TASK-XXX.md`
 - [ ] 验证目标：
 
 ## 执行

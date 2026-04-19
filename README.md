@@ -2,6 +2,8 @@
 
 > **让 Codex 不再"失忆"——一条命令，把可恢复、可审计、可持续迭代的工程工作流注入你的代码仓库。**
 
+开源仓库：https://github.com/formal-you/codex-sdd-workflow
+
 ---
 
 你是否遇到过这些困境？
