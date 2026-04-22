@@ -51,7 +51,6 @@
 - [ ] git status 已检查：
 - [ ] commit mode：manual / auto
 - [ ] Git commit 状态：未提交 / 已提交
-- [ ] 未提交原因 (如果是 manual 模式)：
 - [ ] 推荐 commit message：
 - [ ] 下一步 active task：
 - [ ] 推荐的下一步排期 (Next Task)：

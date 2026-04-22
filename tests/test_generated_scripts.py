@@ -95,7 +95,6 @@ class GeneratedScriptsTests(BootstrapWorkflowTestCase):
             self.assertIn("- [ ] recommended next step:", result.stdout)
             self.assertIn("- [ ] active task: tasks/active/TASK-001-sample.md", result.stdout)
             self.assertIn("- [ ] commit status: not committed", result.stdout)
-            self.assertIn("- [ ] uncommitted reason: manual mode", result.stdout)
             self.assertIn("- [ ] recommended commit message: chore: test handoff", result.stdout)
             self.assertIn("## Context Checkpoint", result.stdout)
             self.assertIn("- [ ] context action: continue / compact / new session", result.stdout)
@@ -130,7 +129,6 @@ class GeneratedScriptsTests(BootstrapWorkflowTestCase):
             self.assertIn("- [ ] recommended next step:", result.stdout)
             self.assertIn("- [ ] active task: tasks/active/TASK-001-sample.md", result.stdout)
             self.assertIn("- [ ] commit status: not committed", result.stdout)
-            self.assertIn("- [ ] uncommitted reason: manual mode", result.stdout)
             self.assertIn("- [ ] recommended commit message: chore: test handoff", result.stdout)
             self.assertIn("## Context Checkpoint", result.stdout)
             self.assertIn("- [ ] context action: continue / compact / new session", result.stdout)
@@ -401,7 +399,6 @@ class GeneratedScriptsTests(BootstrapWorkflowTestCase):
                 "- [x] done\n\n"
                 "## Completion Handoff\n\n"
                 "- [ ] commit status: not committed\n"
-                "- [ ] uncommitted reason: default manual mode\n"
                 "- [ ] recommended commit message: chore: record completed task\n",
                 encoding="utf-8",
             )

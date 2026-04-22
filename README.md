@@ -156,7 +156,7 @@ git clone <repo-url> "$env:CODEX_HOME\skills\codex-sdd-workflow"
 7. **完成前必须闭环**
    - 任务完成前，必须留下验证 evidence 或说明为什么无法验证。
    - 必须留下 next step，或说明项目已经到达终态。
-   - 必须遵守 `TASK_COMPLETION_GIT_MODE`：默认 `manual` 模式下不自动 commit，而是记录未提交原因和推荐 commit message。
+   - 必须遵守 `TASK_COMPLETION_GIT_MODE`：默认 `manual` 模式下不自动 commit，而是记录 `commit status: not committed` 和推荐 commit message。
 
 8. **使用 full profile 时保持边界**
    - `full` 是 repo-local agile delivery scaffolding。
@@ -355,7 +355,7 @@ SDD/
 ### Git 相关
 
 - 默认 `TASK_COMPLETION_GIT_MODE=manual`：Codex **不会自动帮你 commit**
-- 每个任务闭环时会记录：commit 状态、未提交原因、推荐 commit message
+- 每个任务闭环时会记录：commit 状态、推荐 commit message
 - Subagent 永远不会拥有 commit 权限——集成和 Git 闭环由主 agent 负责
 - 如需自动提交，可在 `workflow-config.env` 中将模式改为 `auto`（请谨慎使用）
 

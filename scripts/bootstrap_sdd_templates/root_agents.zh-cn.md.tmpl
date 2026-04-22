@@ -54,12 +54,12 @@
 ## Git Workflow
 
 请遵循 [`{sdd_dir}/docs/git-workflow.md`](./{sdd_dir}/docs/git-workflow.md) 中的分支命名、Conventional Commits 和 PR 准备规则。
-验证通过后，遵循 [`{sdd_dir}/workflow-config.env`](./{sdd_dir}/workflow-config.env) 中的 `TASK_COMPLETION_GIT_MODE`：只有在策略允许时才提交，否则记录未提交原因并给出推荐 commit message。
+验证通过后，遵循 [`{sdd_dir}/workflow-config.env`](./{sdd_dir}/workflow-config.env) 中的 `TASK_COMPLETION_GIT_MODE`：只有在策略允许时才提交，否则记录 `commit status: 未提交` 并给出推荐 commit message。
 
 ## 完成定义
 
 1. 代码改动完成
 2. 已运行目标测试或检查
 3. 文档、任务状态与风险已更新
-4. Git handoff 已记录：已提交，或未提交并说明原因和推荐 commit message
+4. Git handoff 已记录：已提交，或记录 `commit status: 未提交` 和推荐 commit message
 5. 分支与提交已达到可 handoff 或可发起 PR 的状态

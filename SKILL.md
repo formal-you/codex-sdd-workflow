@@ -89,7 +89,7 @@ After a compression or resume, treat the summary as navigation only. Re-read rep
 
 When a task is complete and verification passed, follow `TASK_COMPLETION_GIT_MODE` in the generated `workflow-config.env`:
 
-- `manual`: do not commit by default; record the uncommitted reason and recommended commit message
+- `manual`: do not commit by default; record `commit status: not committed` and a recommended commit message
 - `auto`: the main agent may commit only after scope, tests, and user changes are clear
 
 Subagents never own the final commit. When subtasks are used, the main agent owns integration and Git closure.

@@ -29,7 +29,6 @@
 - [ ] 未决风险 (Blocker)：
 - [ ] branch-aware 热状态已检查：
 - [ ] commit status：未提交 / 已提交
-- [ ] 未提交原因：
 - [ ] 推荐 commit message：
 - [ ] 推荐的下一步明确动作：
 - [ ] 等待用户决策：

@@ -54,12 +54,12 @@ When sources disagree, trust them in this order:
 ## Git Workflow
 
 Follow [`{sdd_dir}/docs/git-workflow.md`](./{sdd_dir}/docs/git-workflow.md) for branch naming, Conventional Commits, and PR readiness.
-After verification, follow `TASK_COMPLETION_GIT_MODE` in [`{sdd_dir}/workflow-config.env`](./{sdd_dir}/workflow-config.env): commit only when allowed, otherwise record why the work is not committed and provide a recommended commit message.
+After verification, follow `TASK_COMPLETION_GIT_MODE` in [`{sdd_dir}/workflow-config.env`](./{sdd_dir}/workflow-config.env): commit only when allowed, otherwise record `commit status: not committed` and provide a recommended commit message.
 
 ## Done Means
 
 1. code changes are complete
 2. targeted tests or checks have run
 3. docs, task state, and risks are updated
-4. Git closure is recorded: committed, or not committed with reason and recommended commit message
+4. Git closure is recorded: committed, or `commit status: not committed` with a recommended commit message
 5. the branch and commit are ready for handoff or PR

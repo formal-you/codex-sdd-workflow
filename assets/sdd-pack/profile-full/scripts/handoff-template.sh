@@ -5,7 +5,7 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage: handoff-template.sh [--root /path/to/SDD] [--task TASK] [--file PATH] [--command CMD] [--risk TEXT] [--next TEXT]
-       [--commit-status TEXT] [--commit-message TEXT] [--uncommitted-reason TEXT]
+       [--commit-status TEXT] [--commit-message TEXT]
 EOF
 }
 
@@ -17,7 +17,6 @@ risk=""
 next_action=""
 commit_status=""
 commit_message=""
-uncommitted_reason=""
 hot_state_branch_dir="state/hot/branches"
 hot_state_task_dir="state/hot/tasks"
 declare -a files_touched=()
@@ -58,7 +57,6 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     --uncommitted-reason)
-      uncommitted_reason="$2"
       shift 2
       ;;
     -h|--help)
@@ -146,7 +144,6 @@ fi
 
 printf -- '- [ ] open risk or blocker: %s\n' "$risk"
 printf -- '- [ ] commit status: %s\n' "$commit_status"
-printf -- '- [ ] uncommitted reason: %s\n' "$uncommitted_reason"
 printf -- '- [ ] recommended commit message: %s\n' "$commit_message"
 printf -- '- [ ] recommended next step: %s\n' "$next_action"
 printf -- '- [ ] backlog item: \n'

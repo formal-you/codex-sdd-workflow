@@ -50,7 +50,6 @@ Only these files or modules may be changed:
 - [ ] git status checked:
 - [ ] commit mode: manual / auto
 - [ ] commit status: not committed / committed
-- [ ] uncommitted reason:
 - [ ] recommended commit message:
 - [ ] next active task:
 - [ ] recommended next step:

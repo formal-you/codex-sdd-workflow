@@ -209,7 +209,6 @@ is_completed_task_file() {
 has_manual_git_closure() {
   local path="$1"
   grep -Eiq 'commit status[:：][[:space:]]*(not committed|未提交)|Git commit 状态[:：][[:space:]]*(未提交)' "$path" &&
-    grep -Eiq '(uncommitted reason|未提交原因)[:：][[:space:]]*[^[:space:]]' "$path" &&
     grep -Eiq '(recommended commit message|推荐 commit message)[:：][[:space:]]*[^[:space:]]' "$path"
 }
 
@@ -340,7 +339,7 @@ for path in "$root"/tasks/active/TASK-*.md "$root"/tasks/active/SUBTASK-*.md "$r
       fi
     else
       if ! has_manual_git_closure "$path"; then
-        warnings+=("$(basename "$path") appears complete but does not record manual Git closure: commit status not committed, uncommitted reason, and recommended commit message")
+        warnings+=("$(basename "$path") appears complete but does not record manual Git closure: commit status not committed and recommended commit message")
       fi
     fi
   fi

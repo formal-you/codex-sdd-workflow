@@ -29,7 +29,6 @@ Use `[ ]` for unfinished, pending, or unconfirmed items. Use `[x]` for completed
 - [ ] blocker:
 - [ ] branch-aware hot state checked:
 - [ ] commit status: not committed / committed
-- [ ] uncommitted reason:
 - [ ] recommended commit message:
 - [ ] recommended next step:
 - [ ] waiting on user decision:

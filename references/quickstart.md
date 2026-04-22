@@ -104,7 +104,7 @@ Before closing a completed task, also close the Git loop:
 
 - follow `TASK_COMPLETION_GIT_MODE` in `SDD/workflow-config.env`
 - with the default `manual` mode, do not commit automatically
-- record `commit status: not committed`, the uncommitted reason, and a recommended commit message
+- record `commit status: not committed` and a recommended commit message
 - only commit when the repo config and user intent allow it
 
 When `full` is used, also maintain:

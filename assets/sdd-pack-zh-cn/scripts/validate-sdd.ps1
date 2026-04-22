@@ -195,7 +195,6 @@ function Test-ManualGitClosure {
 
     return (($Raw -match "(?im)commit status[:：]\s*(not committed|未提交)") -or
         ($Raw -match "(?im)Git commit 状态[:：]\s*未提交")) -and
-        ($Raw -match "(?im)(uncommitted reason|未提交原因)[:：]\s*\S") -and
         ($Raw -match "(?im)(recommended commit message|推荐 commit message)[:：]\s*\S")
 }
 
@@ -338,7 +337,7 @@ foreach ($task in $taskFiles) {
             }
         } else {
             if (-not (Test-ManualGitClosure -Raw $raw)) {
-                $warnings.Add("$($task.Name) appears complete but does not record manual Git closure: commit status not committed, uncommitted reason, and recommended commit message")
+                $warnings.Add("$($task.Name) appears complete but does not record manual Git closure: commit status not committed and recommended commit message")
             }
         }
     }

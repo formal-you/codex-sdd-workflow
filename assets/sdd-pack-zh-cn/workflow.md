@@ -83,4 +83,4 @@
 ## Git Workflow
 
 请遵循 [`docs/git-workflow.md`](./docs/git-workflow.md) 中的分支命名、Conventional Commits 与 PR 准备规则。初始化 workflow 时，pack 会在安全场景下自动补齐 `.gitignore`，并在目标目录本身尚未处于 Git 仓库中时初始化本地仓库。
-任务完成后，遵循 `workflow-config.env` 中的 `TASK_COMPLETION_GIT_MODE`：只有策略允许时才提交，否则在 task handoff 中记录未提交原因和推荐 commit message。
+任务完成后，遵循 `workflow-config.env` 中的 `TASK_COMPLETION_GIT_MODE`：只有策略允许时才提交，否则在 task handoff 中记录 `commit status: 未提交` 与推荐 commit message。

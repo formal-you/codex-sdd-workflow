@@ -83,4 +83,4 @@ The repository-level operating contract lives in the root [`AGENTS.md`](../AGENT
 ## Git Workflow
 
 Follow [`docs/git-workflow.md`](./docs/git-workflow.md) for branch naming, Conventional Commits, and PR readiness. During bootstrap, the pack also fills in `.gitignore` and initializes a local repo when the target is clearly a standalone project.
-When a task is complete, follow `TASK_COMPLETION_GIT_MODE` from `workflow-config.env`: commit only when allowed, otherwise record the uncommitted reason and recommended commit message in the task handoff.
+When a task is complete, follow `TASK_COMPLETION_GIT_MODE` from `workflow-config.env`: commit only when allowed, otherwise record `commit status: not committed` and a recommended commit message in the task handoff.

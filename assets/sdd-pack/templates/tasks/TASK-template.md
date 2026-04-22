@@ -58,7 +58,6 @@ Run the smallest useful checks first.
 - [ ] git status checked:
 - [ ] commit mode: manual / auto
 - [ ] commit status: not committed / committed
-- [ ] uncommitted reason:
 - [ ] recommended commit message:
 - [ ] next active task:
 - [ ] recommended next step:

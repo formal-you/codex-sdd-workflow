@@ -37,7 +37,7 @@
 
 任务完成并通过验证后，先从 `workflow-config.env` 读取 `TASK_COMPLETION_GIT_MODE`，再决定是否提交。
 
-- `manual`：默认不提交。任务完成时，记录 `commit status: 未提交`、未提交原因，以及推荐 commit message。
+- `manual`：默认不提交。任务完成时，记录 `commit status: 未提交` 与推荐 commit message。
 - `auto`：只有在测试通过、git scope 清楚、且不会夹带无关用户改动时，主 agent 才可以提交。
 
 Subagent 不负责最终提交。只要使用了 subtasks，最终集成和 Git handoff 都由主 agent 负责。
@@ -49,7 +49,7 @@ Subagent 不负责最终提交。只要使用了 subtasks，最终集成和 Git 
 1. task card 和 subtasks 准确覆盖本次实现范围
 2. 相关测试或检查结果已经记录
 3. 风险、后续事项和文档更新已经说明
-4. task card 已记录本次工作是否提交；如未提交，已说明原因
+4. task card 已记录本次工作是否提交；如未提交，至少保留 `commit status: 未提交` 与推荐 commit message
 5. 当前分支和提交历史已经达到可评审状态
 6. 如果使用了 subtasks，主 agent 已说明这些结果如何合入主线
 

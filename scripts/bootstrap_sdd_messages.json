@@ -129,7 +129,7 @@
         "当并行工作合理时，先用 {new_subtask_ps1} \"parent task\" \"subtask 标题\" 创建 subtask，再进入实现",
         "已完成任务用 {archive_task_ps1} 归档到 `tasks/history/`",
         "归档前，在 `docs/progress.md` 留下下一步入口、候选项和推荐项",
-        "完成任务后，按 workflow-config.env 的 TASK_COMPLETION_GIT_MODE 记录 Git handoff、未提交原因和推荐 commit message"
+        "完成任务后，按 workflow-config.env 的 TASK_COMPLETION_GIT_MODE 记录 Git handoff、commit status 和推荐 commit message"
       ],
       "full_profile_steps": [
         "阅读 {agile_delivery_md} 与 {ci_cd_md}",
@@ -153,7 +153,7 @@
         "Create an ADR with {new_adr_ps1} when the change introduces a durable technical choice",
         "Use {handoff_ps1} before ending the session",
         "Before archiving, leave a next-step entry, candidate options, and a recommendation in docs/progress.md",
-        "After completing a task, follow TASK_COMPLETION_GIT_MODE in workflow-config.env and record commit status, uncommitted reason, and recommended commit message"
+        "After completing a task, follow TASK_COMPLETION_GIT_MODE in workflow-config.env and record commit status and a recommended commit message"
       ],
       "full_profile_steps": [
         "Read {agile_delivery_md} and {ci_cd_md}",

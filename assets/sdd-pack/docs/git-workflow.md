@@ -37,7 +37,7 @@ Keep the summary line imperative and under about 72 characters when possible.
 
 Read `TASK_COMPLETION_GIT_MODE` from `workflow-config.env`.
 
-- `manual`: do not commit by default. When a task is complete, record `commit status: not committed`, the uncommitted reason, and a recommended commit message.
+- `manual`: do not commit by default. When a task is complete, record `commit status: not committed` and a recommended commit message.
 - `auto`: the main agent may commit only after tests pass, git scope is clear, and unrelated user changes are not included.
 
 Subagents must not create final commits. When subtasks were used, the main agent owns integration and the final Git closure.
@@ -49,7 +49,7 @@ Before opening or handing off a PR, confirm:
 1. the task and any subtasks reflect the implemented scope
 2. targeted tests or checks are recorded
 3. risks, follow-ups, and docs updates are called out
-4. the task records whether the work was committed or why it remains uncommitted
+4. the task records whether the work was committed, or records `commit status: not committed` with a recommended commit message
 5. the branch and commits are ready for review
 6. the main agent summarized how subtask work was integrated
 

@@ -117,7 +117,6 @@ if ($CommandsRun.Count -gt 0) {
 
 Write-Output "- [ ] open risk or blocker: $Risk"
 Write-Output "- [ ] commit status: $CommitStatus"
-Write-Output "- [ ] uncommitted reason: $UncommittedReason"
 Write-Output "- [ ] recommended commit message: $CommitMessage"
 Write-Output "- [ ] recommended next step: $NextAction"
 Write-Output "- [ ] backlog 条目："

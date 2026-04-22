@@ -50,7 +50,6 @@
 - [ ] git status 已检查：
 - [ ] commit mode：manual / auto
 - [ ] commit status：未提交 / 已提交
-- [ ] 未提交原因：
 - [ ] 推荐 commit message：
 - [ ] 下一步 active task：
 - [ ] 推荐下一步：
